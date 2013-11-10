@@ -23,8 +23,8 @@
     pagination: true,
     updateURL: false,
     keyboard: true,
-    beforeMove: null,
-    afterMove: null,
+    beforeMove: $.noop,
+    afterMove: $.noop,
     loop: false,
     responsiveFallback: false
 	};
@@ -106,7 +106,7 @@
         "-webkit-transition": "all " + settings.animationTime + "ms " + settings.easing
       });
       $(this).one('transitionend webkitTransitionEnd', function(e) {
-        if (typeof settings.afterMove == 'function') settings.afterMove(index);
+        settings.afterMove(index);
       });
     }
     
@@ -126,7 +126,7 @@
       }else {
         pos = (index * 100) * -1;
       }
-      if (typeof settings.beforeMove == 'function') settings.beforeMove( current.data("index"));
+      settings.beforeMove( current.data("index"));
       current.removeClass("active")
       next.addClass("active");
       if(settings.pagination == true) {
@@ -161,7 +161,7 @@
       }else {
         pos = ((next.data("index") - 1) * 100) * -1;
       }
-      if (typeof settings.beforeMove == 'function') settings.beforeMove(current.data("index"));
+      settings.beforeMove(current.data("index"));
       current.removeClass("active")
       next.addClass("active")
       if(settings.pagination == true) {
@@ -182,7 +182,7 @@
       current = $(settings.sectionContainer + ".active")
       next = $(settings.sectionContainer + "[data-index='" + (page_index) + "']");
       if(next.length > 0) {
-        if (typeof settings.beforeMove == 'function') settings.beforeMove(current.data("index"));
+        settings.beforeMove(current.data("index"));
         current.removeClass("active")
         next.addClass("active")
         $(".onepage-pagination li a" + ".active").removeClass("active");
@@ -335,20 +335,30 @@
     
     if(settings.keyboard == true) {
       $(document).keydown(function(e) {
-        var tag = e.target.tagName.toLowerCase();
-        
-        if (!$("body").hasClass("disabled-onepage-scroll")) {
-          switch(e.which) {
-            case 38:
-              if (tag != 'input' && tag != 'textarea') el.moveUp()
-            break;
-            case 40:
-              if (tag != 'input' && tag != 'textarea') el.moveDown()
-            break;
-            default: return;
-          }
+        var tag = e.target.nodeName;
+        if(tag == 'INPUT' || tag == 'TEXTAREA' || $('body').hasClass('disabled-onepage-scroll')) {
+          return;
         }
-        
+
+        switch(e.which) {
+          case 33: // PageUp
+          case 38: // Up
+            el.moveUp();
+            break;
+          case 34: // PageDown
+          case 40: // Down
+            el.moveDown();
+            break;
+          case 36: // Home
+            el.moveTo(1);
+            break;
+          case 35: // End
+            el.moveTo(sections.length);
+            break;
+          default:
+            return;
+        }
+
         e.preventDefault(); 
       });
     }
