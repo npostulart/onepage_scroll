@@ -23,8 +23,8 @@
     pagination: true,
     updateURL: false,
     keyboard: true,
-    beforeMove: null,
-    afterMove: null,
+    beforeMove: $.noop,
+    afterMove: $.noop,
     loop: false,
     responsiveFallback: false
 	};
@@ -82,7 +82,7 @@
   $.fn.onepage_scroll = function(options){
     var settings = $.extend({}, defaults, options),
         el = $(this),
-        sections = $(settings.sectionContainer)
+        sections = $(settings.sectionContainer),
         total = sections.length,
         status = "off",
         topPos = 0,
@@ -90,19 +90,23 @@
         quietPeriod = 500,
         paginationList = "";
     
+    // According to http://caniuse.com/#search=transition, other prefix is useless
+    $.support.transition = document.body.style.transition != undefined || document.body.style.webkitTransition != undefined;
     $.fn.transformPage = function(settings, pos, index) {
+      if(!$.support.transition) {
+        $(this).animate({top: pos + "%" }, function() {
+          settings.afterMove(index);
+        });
+        return;
+      }
       $(this).css({
-        "-webkit-transform": "translate3d(0, " + pos + "%, 0)", 
-        "-webkit-transition": "all " + settings.animationTime + "ms " + settings.easing,
-        "-moz-transform": "translate3d(0, " + pos + "%, 0)", 
-        "-moz-transition": "all " + settings.animationTime + "ms " + settings.easing,
-        "-ms-transform": "translate3d(0, " + pos + "%, 0)", 
-        "-ms-transition": "all " + settings.animationTime + "ms " + settings.easing,
         "transform": "translate3d(0, " + pos + "%, 0)", 
-        "transition": "all " + settings.animationTime + "ms " + settings.easing
+        "transition": "all " + settings.animationTime + "ms " + settings.easing,
+        "-webkit-transform": "translate3d(0, " + pos + "%, 0)",
+        "-webkit-transition": "all " + settings.animationTime + "ms " + settings.easing
       });
-      $(this).one('webkitTransitionEnd otransitionend oTransitionEnd msTransitionEnd transitionend', function(e) {
-        if (typeof settings.afterMove == 'function') settings.afterMove(index);
+      $(this).one('transitionend webkitTransitionEnd', function(e) {
+        settings.afterMove(index);
       });
     }
     
@@ -122,7 +126,7 @@
       }else {
         pos = (index * 100) * -1;
       }
-      if (typeof settings.beforeMove == 'function') settings.beforeMove( current.data("index"));
+      settings.beforeMove( current.data("index"));
       current.removeClass("active")
       next.addClass("active");
       if(settings.pagination == true) {
@@ -157,7 +161,7 @@
       }else {
         pos = ((next.data("index") - 1) * 100) * -1;
       }
-      if (typeof settings.beforeMove == 'function') settings.beforeMove(current.data("index"));
+      settings.beforeMove(current.data("index"));
       current.removeClass("active")
       next.addClass("active")
       if(settings.pagination == true) {
@@ -178,6 +182,7 @@
       current = $(settings.sectionContainer + ".active")
       next = $(settings.sectionContainer + "[data-index='" + (page_index) + "']");
       if(next.length > 0) {
+        settings.beforeMove(current.data("index"));
         current.removeClass("active")
         next.addClass("active")
         $(".onepage-pagination li a" + ".active").removeClass("active");
@@ -330,20 +335,30 @@
     
     if(settings.keyboard == true) {
       $(document).keydown(function(e) {
-        var tag = e.target.tagName.toLowerCase();
-        
-        if (!$("body").hasClass("disabled-onepage-scroll")) {
-          switch(e.which) {
-            case 38:
-              if (tag != 'input' && tag != 'textarea') el.moveUp()
-            break;
-            case 40:
-              if (tag != 'input' && tag != 'textarea') el.moveDown()
-            break;
-            default: return;
-          }
+        var tag = e.target.nodeName;
+        if(tag == 'INPUT' || tag == 'TEXTAREA' || $('body').hasClass('disabled-onepage-scroll')) {
+          return;
         }
-        
+
+        switch(e.which) {
+          case 33: // PageUp
+          case 38: // Up
+            el.moveUp();
+            break;
+          case 34: // PageDown
+          case 40: // Down
+            el.moveDown();
+            break;
+          case 36: // Home
+            el.moveTo(1);
+            break;
+          case 35: // End
+            el.moveTo(sections.length);
+            break;
+          default:
+            return;
+        }
+
         e.preventDefault(); 
       });
     }
@@ -352,4 +367,4 @@
   
   
 }(window.jQuery);
-
+// vim: sw=2:ts=2:sts=2
