@@ -82,7 +82,7 @@
   $.fn.onepage_scroll = function(options){
     var settings = $.extend({}, defaults, options),
         el = $(this),
-        sections = $(settings.sectionContainer)
+        sections = $(settings.sectionContainer),
         total = sections.length,
         status = "off",
         topPos = 0,
@@ -90,18 +90,22 @@
         quietPeriod = 500,
         paginationList = "";
     
+    // According to http://caniuse.com/#search=transition, other prefix is useless
+    $.support.transition = document.body.style.transition != undefined || document.body.style.webkitTransition != undefined;
     $.fn.transformPage = function(settings, pos, index) {
+      if(!$.support.transition) {
+        $(this).animate({top: pos + "%" }, function() {
+          settings.afterMove(index);
+        });
+        return;
+      }
       $(this).css({
-        "-webkit-transform": "translate3d(0, " + pos + "%, 0)", 
-        "-webkit-transition": "all " + settings.animationTime + "ms " + settings.easing,
-        "-moz-transform": "translate3d(0, " + pos + "%, 0)", 
-        "-moz-transition": "all " + settings.animationTime + "ms " + settings.easing,
-        "-ms-transform": "translate3d(0, " + pos + "%, 0)", 
-        "-ms-transition": "all " + settings.animationTime + "ms " + settings.easing,
         "transform": "translate3d(0, " + pos + "%, 0)", 
-        "transition": "all " + settings.animationTime + "ms " + settings.easing
+        "transition": "all " + settings.animationTime + "ms " + settings.easing,
+        "-webkit-transform": "translate3d(0, " + pos + "%, 0)",
+        "-webkit-transition": "all " + settings.animationTime + "ms " + settings.easing
       });
-      $(this).one('webkitTransitionEnd otransitionend oTransitionEnd msTransitionEnd transitionend', function(e) {
+      $(this).one('transitionend webkitTransitionEnd', function(e) {
         if (typeof settings.afterMove == 'function') settings.afterMove(index);
       });
     }
@@ -353,4 +357,4 @@
   
   
 }(window.jQuery);
-
+// vim: sw=2:ts=2:sts=2
