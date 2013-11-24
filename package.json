@@ -1,0 +1,21 @@
+{
+  "name": "onepage-scroll",
+  "description": "Create onepage scroll website like http://www.topyanjing.com",
+  "version": "1.0.0",
+  "homepage": "http://github.com/yangg/onepage-scroll",
+  "author": {
+    "name": "Brook Yang",
+    "url": "http://uedsky.com/"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/yangg/onepage-scroll.git"
+  },
+  "devDependencies": {
+    "grunt": "~0.4.0",
+    "grunt-contrib-uglify": "~0.2.7",
+    "grunt-contrib-cssmin": "~0.7.0",
+    "grunt-contrib-copy": "~0.4.1",
+    "grunt-contrib-watch": "~0.5.3"
+  }
+}
