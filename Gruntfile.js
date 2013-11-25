@@ -8,6 +8,7 @@ module.exports = function(grunt){
                     'jquery.onepage-scroll.min.js': 'jquery.onepage-scroll.js'
                 },
                 options: {
+                    preserveComments: 'some',
                     sourceMap: function(filepath) {
                         // path to save .map file
                         return filepath + '.map';

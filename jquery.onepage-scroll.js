@@ -13,6 +13,9 @@
  * License: GPL v3
  *
  * ========================================================== */
+/*!
+ * Modified by Brook Yang <uedsky@gmail.com>
+ */
 
 !function($){
   
