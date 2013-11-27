@@ -6,39 +6,39 @@
 # Website : <website url>
 #
 
-jQuery ->
+jQuery ($) ->
 
 	# Swipe Event handling
-	$.fn.swipeEvents = () ->
-		@.each () ->
-			startX
-			startY
-			$this = $ @
-
-			$this.bind 'touchstart', touchstart
-
-			touchstart = ( e ) ->
-				touches = e.originalEvent.touches
-				if touches and touches.length
-					startX = touches[0].pageX
-					startY = touches[0].pageY
-					$this.bind 'touchmove', touchmove
-
-			touchmove = ( e ) ->
-				touches = e.originalEvent.touches
-				if touches and touches.length
-					deltaX = startX - touches[0].pageX
-					deltaY = startY - touches[0].pageY
-					$this.trigger "swipeLeft" if deltaX >= 50
-					$this.trigger "sipeRight" if deltaX <= -50
-					$this.trigger "swipeUp" if deltaY >= 50
-					$this.trigger "swipeDown" if deltaY <= -50
-					$this.unbind 'touchmove', touchmove if Math.abs(deltaX) >= 50 or Math.abs(deltaY) >= 50
+#	$.fn.swipeEvents = () ->
+#		@.each () ->
+#			startX = 0
+#			startY = 0
+#			$this = $ @
+#
+#			$this.bind 'touchstart', touchstart
+#
+#			touchstart = ( e ) ->
+#				touches = e.originalEvent.touches
+#				if touches and touches.length
+#					startX = touches[0].pageX
+#					startY = touches[0].pageY
+#					$this.bind 'touchmove', touchmove
+#
+#			touchmove = ( e ) ->
+#				touches = e.originalEvent.touches
+#				if touches and touches.length
+#					deltaX = startX - touches[0].pageX
+#					deltaY = startY - touches[0].pageY
+#					$this.trigger "swipeLeft" if deltaX >= 50
+#					$this.trigger "sipeRight" if deltaX <= -50
+#					$this.trigger "swipeUp" if deltaY >= 50
+#					$this.trigger "swipeDown" if deltaY <= -50
+#					$this.unbind 'touchmove', touchmove if Math.abs(deltaX) >= 50 or Math.abs(deltaY) >= 50
 
 
 	$.onepage_scroll = ( element, options ) ->
 		# current state
-		state = ''
+#		state = ''
 
 		# plugin settings
 		@settings = {}
@@ -47,20 +47,20 @@ jQuery ->
 		@$element = $ element
 
 		# set current state
-		@setState = ( _state ) -> state = _state
+#		@setState = ( _state ) -> state = _state
 
 		#get current state
-		@getState = -> state
+#		@getState = -> state
 
 		# Scroll Animation
 		# afterMove function is called after animation
 		@transformPage = ( index ) ->
 			pos = ( ( index - 1 ) * 100 ) * -1
 			# If Browser doesn't support transitions use jQuery animate
-			if not @supportTransition
+			if not @supportTransition()
 				@$element.animate
 					top: "#{pos}%"
-				, () ->
+				, () =>
 					@settings.afterMove index
 			# Use transform and transition for animation
 			else
@@ -69,8 +69,9 @@ jQuery ->
 					"transition": "all #{@settings.animationTime}ms #{@settings.easing}"
 					"-webkit-transform": "translate3d(0, #{pos}%, 0)"
 					"-webkit-transition": "all #{@settings.animationTime}ms #{@settings.easing}"
-				@$element.one 'webkitTransitionEnd otransitionend oTransitionEnd msTransitionEnd transitionend', (e) ->
+				@$element.one 'webkitTransitionEnd otransitionend oTransitionEnd msTransitionEnd transitionend', () =>
 					@settings.afterMove index
+			@
 
 		# Move the page one slide down
 		@moveDown = () ->
@@ -106,10 +107,9 @@ jQuery ->
 			# if pagination is enabled set the correct classes
 			if @settings.pagination
 				$(".onepage-pagination li a.active").removeClass "active"
-				$(".onpeage-pagination li a[data-index='#{page_index}']").addClass "active"
+				$(".onepage-pagination li a[data-index='#{page_index}']").addClass "active"
 			# Set the body class to the currently viewed slide
-			$("body").removeClass "viewing-page-#{current.data("index")}"
-				.addClass "viewing-page-#{next.data("index")}"
+			$("body").removeClass("viewing-page-#{current.data("index")}").addClass("viewing-page-#{next.data("index")}")
 
 			# Update the Browser URL if enabled
 			@updateHistory page_index if @settings.updateURL
@@ -122,6 +122,7 @@ jQuery ->
 			if history.replaceState
 				href = window.location.href.substr 0, "#{window.location.href.indexOf('#')}##{(index)}"
 				history.pushState {}, document.title, href
+			@
 
 		# Responsive behaviour
 		@responsive = () ->
@@ -130,7 +131,8 @@ jQuery ->
 				# Add class to body and unbind all events
 				$("body").addClass "disabled-onepage-scroll"
 				$(document).unbind "mousewheel DOMMouseScroll"
-				@$element.swipeEvents().unbind("swipeDown swipeUp")
+				@$element.hammer().unbind "swipeup.onepage swipedown.onepage"
+#				@$element.swipeEvents().unbind("swipeDown swipeUp")
 			else
 				# Remove disabled class if set and start at top
 				if $("body").hasClass "disabled-onepage-scroll"
@@ -140,21 +142,26 @@ jQuery ->
 					, "fast"
 
 				# Bind swipeDown and swipeUp Events
-				@$element.swipeEvents().bind "swipeDown", (e) ->
+#				@$element.swipeEvents().bind "swipeDown", (e) =>
+				@$element.hammer().on 'swipedown.onepage', (e) =>
 					# Do nothing if onepagescroll is disabled
 					return if $("body").hasClass "disabled-onepage-scroll"
 					e.preventDefault()
+					e.gesture.preventDefault()
 					@moveUp()
-				.bind "swipeUp", (e) ->
+#				.bind "swipeUp", (e) =>
+				.on 'swipeup.onepage', (e) =>
 					# Do nothing if onepagescroll is disabled
 					return if $("body").hasClass "disabled-onepage-scroll"
 					e.preventDefault()
+					e.gesture.preventDefault()
 					@moveDown()
 
-				$(document).bind 'mousewheel DOMMouseScroll', (e) ->
+				$(document).bind 'mousewheel.onepage DOMMouseScroll.onepage', (e) =>
 					e.preventDefault()
 					delta = e.originalEvent.wheelDelta || -e.originalEvent.detail
 					@init_scroll e, delta
+			@
 
 		# Scroll function
 		@init_scroll = ( e, delta ) ->
@@ -168,16 +175,18 @@ jQuery ->
 			if deltaOfInterest < 0 then @moveDown() else @moveUp()
 			# set last animation time
 			@lastAnimation = timeNow
+			@
 
 		# Bind pagination events
 		@bindPagination = () ->
-			$(".onepage-pagination li a").on 'click', (e) =>
+			$(".onepage-pagination li a").on 'click.onepage', (e) =>
 				# get index value from link
 				page_index = $(e.currentTarget).data "index"
 				@moveTo page_index
+			@
 
 		# Returns true if browser supports transitions
-		@supportTransition = -> document.body.style.transition isnt undefined or document.body.style.webkitTransition isnt undefined
+		@supportTransition = -> Modernizr.csstransitions and Modernizr.csstransforms3d
 
 		@init = ->
 			# Concatenate settings and options
@@ -187,8 +196,6 @@ jQuery ->
 			@sections = $ @settings.sectionContainer
 			# Section count
 			@total = @sections.length
-			# Position of view
-			@topPos = 0
 			# Time of last animation
 			@lastAnimation = 0
 			# Waittime for next scroll/swipe-Event
@@ -197,32 +204,22 @@ jQuery ->
 			@paginationList = ""
 
 			# Prepare everything before binding wheel scroll
-			@$element.addClass "onepage-wrapper".css "position", "relative"
+			@$element.addClass("onepage-wrapper").css("position", "relative")
 			# Set css for each section
-			$.each sections, (i) ->
-				$(@).css
+			topPos = 0
+			$.each @sections, ( i, elem ) =>
+				$(elem).addClass("section").attr("data-index", i+1).css
 					position: "absolute"
 					top: "#{topPos}%"
+				topPos += 100
 				# Add element to paginationlist
-				@paginationList += "<li><a data-index='#{i+1}' href='#{i+1}'></a></li>" if @settings.paginationList
-
-			# Bind swipeDown and swipeUp events
-			@$element.swipeEvents().bind "swipeDown", (e) ->
-				# Do nothing if onepagescroll disabled
-				return if $("body").hasClass "disabled-onepage-scroll"
-				e.preventDefault()
-				@moveUp @$element
-			.bind "swipeUp", (e) ->
-				# Do nothing if onepagescroll disabled
-				return if $("body").hasClass "disabled-onepage-scroll"
-				e.preventDefault()
-				@moveDown @$element
+				@paginationList += "<li><a data-index='#{i+1}' href='##{i+1}'></a></li>" if @settings.pagination
 
 			# Bind scroll events
-			$(document).bind 'mousewheel DOMMouseScroll', ( e ) ->
+			$(document).bind 'mousewheel.onepage DOMMouseScroll.onepage', ( e ) =>
 				e.preventDefault()
-				delta = event.originalEvent.wheelDelta or -event.originalEvent.detail
-				@init_scroll() if not $("body").hasClass "disabled-onepage-scroll"
+				delta = e.originalEvent.wheelDelta or -e.originalEvent.detail
+				@init_scroll e, delta if not $("body").hasClass "disabled-onepage-scroll"
 
 			# Create pagination
 			if @settings.pagination
@@ -234,6 +231,7 @@ jQuery ->
 			$("#{@settings.sectionContainer}[data-index='1']").addClass "active"
 			$("body").addClass "viewing-page-1"
 			$(".onepage-pagination li a[data-index='1']").addClass "active" if @settings.pagination
+			$(window).scrollTop 0
 
 			# Check for url hash
 			if window.location.hash isnt "" and window.location.hash isnt "#1"
@@ -246,13 +244,27 @@ jQuery ->
 
 			# Enable responsive Fallback if set
 			if @settings.responsiveFallback isnt false
-				$(window).resize () ->
+				$(window).resize () =>
 					@responsive()
 				@responsive()
+			else
+				# Bind swipeDown and swipeUp events
+	#			@$element.swipeEvents().bind "swipeDown", (e) =>
+				@$element.hammer().on 'swipedown.onepage', (e) =>
+					# Do nothing if onepagescroll disabled
+					return if $("body").hasClass "disabled-onepage-scroll"
+					e.preventDefault()
+					@moveUp @$element
+	#			.bind "swipeUp", (e) =>
+				.on 'swipeup.onepage', (e) =>
+						# Do nothing if onepagescroll disabled
+						return if $("body").hasClass "disabled-onepage-scroll"
+						e.preventDefault()
+						@moveDown @$element
 
 			# Bind keyboard events
 			if @settings.keyboard
-				$(document).keydown ( e ) =>
+				$(document).on 'keydown.onepage', ( e ) =>
 					tag = e.target.nodeName
 					return if tag is 'INPUT' or tag is 'TEXTAREA' or $("body").hasClass "disabled-onepage-scroll"
 					switch e.which

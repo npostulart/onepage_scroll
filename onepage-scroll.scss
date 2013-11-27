@@ -1,12 +1,19 @@
-body, html {
-  margin: 0;
-  overflow: hidden;
-  -webkit-transition: opacity 400ms;
-  -moz-transition: opacity 400ms;
-  transition: opacity 400ms;
+@import "compass/css3";
+
+html {
+  position: inherit;
 }
 
-body, .onepage-wrapper, html {
+html,
+body {
+  margin: 0;
+  overflow: hidden;
+  @include single-transition(opacity .4s);
+}
+
+html,
+body,
+.onepage-wrapper {
   display: block;
   position: static;
   padding: 0;
@@ -21,12 +28,12 @@ body, .onepage-wrapper, html {
   position: relative;
   padding: 0;
   -webkit-transform-style: preserve-3d;
+  .section {
+    width: 100%;
+    height: 100%;
+  }
 }
 
-.onepage-wrapper .section {
-  width: 100%;
-  height: 100%;
-}
 
 .onepage-pagination {
   position: absolute;
@@ -36,59 +43,53 @@ body, .onepage-wrapper, html {
   list-style: none;
   margin: 0;
   padding: 0;
-}
-.onepage-pagination li {
-  padding: 0;
-  text-align: center;
-}
-.onepage-pagination li a{
-  padding: 10px;
-  width: 4px;
-  height: 4px;
-  display: block;
-  
-}
-.onepage-pagination li a:before{
-  content: '';
-  position: absolute;
-  width: 4px;
-  height: 4px;
-  background: rgba(0,0,0,0.85);
-  border-radius: 10px;
-  -webkit-border-radius: 10px;
-  -moz-border-radius: 10px;
-}
-
-.onepage-pagination li a.active:before{
-  width: 10px;
-  height: 10px;
-  background: none;
-  border: 1px solid black;
-  margin-top: -4px;
-  left: 8px;
+  li {
+    padding: 0;
+    text-align: center;
+    a {
+      padding: 10px;
+      width: 4px;
+      height: 4px;
+      display: block;
+      &:before{
+        content: '';
+        position: absolute;
+        width: 4px;
+        height: 4px;
+        background: rgba(0, 0, 0, 0.85);
+        @include border-radius(10px);
+      }
+      &.active:before{
+        width: 10px;
+        height: 10px;
+        background: none;
+        border: 1px solid black;
+        margin-top: -4px;
+        left: 8px;
+      }
+    }
+  }
 }
 
-.disabled-onepage-scroll, .disabled-onepage-scroll .wrapper {
-  overflow: auto;
+.disable-onepage-scroll {
+  &,
+  .wrapper {
+    overflow: auto;
+  }
+  .onepage-wrapper {
+    @include transform(none !important);
+    min-height: 100%;
+    .section {
+      position: relative !important;
+      top: auto !important;
+    }
+  }
+  .onepage-pagination {
+    display: none;
+  }
 }
 
-.disabled-onepage-scroll .onepage-wrapper .section {
-  position: relative !important;
-  top: auto !important;
-}
+body.disabled-onepage-scroll,
 .disabled-onepage-scroll .onepage-wrapper {
-  -webkit-transform: none !important;
-  -moz-transform: none !important;
-  transform: none !important;
-  -ms-transform: none !important;
-  min-height: 100%;
-}
-
-
-.disabled-onepage-scroll .onepage-pagination {
-  display: none;
-}
-
-body.disabled-onepage-scroll, .disabled-onepage-scroll .onepage-wrapper, html {
   position: inherit;
 }

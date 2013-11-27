@@ -1,0 +1,26 @@
+{
+  "name": "onepage-scroll",
+  "version": "1.1.1",
+  "homepage": "https://github.com/npostulart/onepage-scroll",
+  "authors": [
+    "Niklas Postulart <npostulart@uandi.com>"
+  ],
+  "description": "Onepage Section Scroll Plugin",
+  "main": "jquery.onepage-scroll.coffee",
+  "keywords": [
+    "jquery",
+    "onepage",
+    "scroll"
+  ],
+  "license": "MIT",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ],
+  "devDependencies": {
+    "hammerjs": "~1.0.5"
+  }
+}
