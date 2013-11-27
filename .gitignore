@@ -1,0 +1,7 @@
+node_modules/*
+.sass-cache/*
+./jquery.onepage-scroll.js
+./jquery.onepage-scroll.js.map
+./jquery.onepage-scroll.min.js
+./jquery.onepage-scroll.min.js.map
+./onepage-scroll.css

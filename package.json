@@ -1,21 +1,21 @@
 {
   "name": "onepage-scroll",
-  "description": "Create onepage scroll website like http://www.topyanjing.com",
+  "description": "Create onepage scroll website like iPhone 5s Promo Page",
   "version": "1.0.0",
-  "homepage": "http://github.com/yangg/onepage-scroll",
+  "homepage": "http://github.com/npostulart/onepage-scroll",
   "author": {
-    "name": "Brook Yang",
-    "url": "http://uedsky.com/"
+    "name": "Niklas Postulart"
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/yangg/onepage-scroll.git"
+    "url": "https://github.com/npostulart/onepage-scroll.git"
   },
   "devDependencies": {
-    "grunt": "~0.4.0",
+    "grunt": "~0.4.2",
     "grunt-contrib-uglify": "~0.2.7",
-    "grunt-contrib-cssmin": "~0.7.0",
     "grunt-contrib-copy": "~0.4.1",
-    "grunt-contrib-watch": "~0.5.3"
+    "grunt-contrib-watch": "~0.5.3",
+    "grunt-contrib-compass": "~0.6.0",
+    "grunt-contrib-coffee": "~0.7.0"
   }
 }
