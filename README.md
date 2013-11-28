@@ -49,7 +49,13 @@ You can also trigger page move programmatically:
 To get the onepage_scroll object simply call:
 
 ```javascript
-	$('.main').data('onepage_scroll')
+	onepage_scroll = $('.main').data('onepage_scroll')
+```
+
+or if just one element (it should be) just call:
+
+```javascript
+	onepage_scroll = $('.main').onepage_scroll()
 ```
 
 You can then chain the needed methods.

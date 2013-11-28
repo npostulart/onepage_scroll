@@ -246,15 +246,16 @@
       responsiveFallback: false
     };
     return $.fn.onepage_scroll = function(options) {
-      return this.each(function() {
+      this.each(function() {
         var plugin;
         if ($(this).data('onepage_scroll') === void 0) {
           plugin = new $.onepage_scroll(this, options);
           return $(this).data('onepage_scroll', plugin);
-        } else {
-          return $(this).data('onepage_scroll');
         }
       });
+      if (this.length === 1 && $(this).data('onepage_scroll') !== void 0) {
+        return $(this).data('onepage_scroll');
+      }
     };
   });
 

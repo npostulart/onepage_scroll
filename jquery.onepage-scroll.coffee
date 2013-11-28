@@ -302,7 +302,6 @@ jQuery ($) ->
 			if $(@).data( 'onepage_scroll' ) is undefined
 				plugin = new $.onepage_scroll @, options
 				$(@).data 'onepage_scroll', plugin
-			# TODO: Doesn't work yet, figure out why
-			# else return plugin
-			else
-				$(@).data 'onepage_scroll'
+		# If only one element and data element is set
+		if @.length is 1 and $(@).data( 'onepage_scroll' ) isnt undefined
+			$(@).data 'onepage_scroll'
