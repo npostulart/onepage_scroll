@@ -5,16 +5,16 @@ module.exports = (grunt) ->
         coffee:
             compile:
                 files:
-                    "jquery.onepage-scroll.js": "jquery.onepage-scroll.coffee"
+                    "dist/jquery.onepage-scroll.js": "src/jquery.onepage-scroll.coffee"
             compileWithMaps:
                 options:
                     sourceMap: true
                 files:
-                    "jquery.onepage-scroll.js": "jquery.onepage-scroll.coffee"
+                    "dist/jquery.onepage-scroll.js": "src/jquery.onepage-scroll.coffee"
         uglify:
             all:
                 files:
-                    'jquery.onepage-scroll.min.js': 'jquery.onepage-scroll.js'
+                    'dist/jquery.onepage-scroll.min.js': 'dist/jquery.onepage-scroll.js'
                 options:
                     preserveComments: 'some'
                     # sourceMap: (filepath) ->
@@ -32,17 +32,19 @@ module.exports = (grunt) ->
                     environment: 'development'
         copy:
             all:
+                expand: true
+                cwd: 'dist/'
                 src: ['jquery.onepage-scroll.js', 'onepage-scroll.css']
-                dest: 'Demo/'
+                dest: 'demo/'
         watch:
             coffee:
-                files: ['jquery.onepage-scroll.coffee']
+                files: ['src/jquery.onepage-scroll.coffee']
                 tasks: 'coffee:compile'
             compass:
-                files: ['onepage-scroll.scss']
+                files: ['src/onepage-scroll.scss']
                 tasks: 'compass:dev'
             all:
-                files: ['jquery.onepage-scroll.js', 'onepage-scroll.css']
+                files: ['dist/jquery.onepage-scroll.js', 'dist/onepage-scroll.css']
                 tasks: 'copy'
 
     grunt.loadNpmTasks 'grunt-contrib-coffee'
@@ -52,5 +54,4 @@ module.exports = (grunt) ->
     grunt.loadNpmTasks 'grunt-contrib-watch'
 
     grunt.registerTask 'dev', ['coffee:compile', 'compass:dev', 'copy']
-    grunt.registerTask 'prod', ['coffee:compile', 'uglify', 'compass:prod', 'copy']
-    grunt.registerTask 'default', ['watch']
+    grunt.registerTask 'default', ['coffee:compile', 'uglify', 'compass:prod', 'copy']
