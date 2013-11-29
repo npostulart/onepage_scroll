@@ -1,9 +1,9 @@
-/* line 3, onepage-scroll.scss */
+/* line 3, ../src/onepage-scroll.scss */
 html {
   position: inherit;
 }
 
-/* line 7, onepage-scroll.scss */
+/* line 7, ../src/onepage-scroll.scss */
 html,
 body {
   margin: 0;
@@ -14,7 +14,7 @@ body {
   transition: opacity 0.4s, 1s;
 }
 
-/* line 14, onepage-scroll.scss */
+/* line 14, ../src/onepage-scroll.scss */
 html,
 body,
 .onepage-wrapper {
@@ -25,7 +25,7 @@ body,
   height: 100%;
 }
 
-/* line 24, onepage-scroll.scss */
+/* line 24, ../src/onepage-scroll.scss */
 .onepage-wrapper {
   width: 100%;
   height: 100%;
@@ -34,13 +34,13 @@ body,
   padding: 0;
   -webkit-transform-style: preserve-3d;
 }
-/* line 31, onepage-scroll.scss */
+/* line 31, ../src/onepage-scroll.scss */
 .onepage-wrapper .section {
   width: 100%;
   height: 100%;
 }
 
-/* line 38, onepage-scroll.scss */
+/* line 38, ../src/onepage-scroll.scss */
 .onepage-pagination {
   position: absolute;
   right: 10px;
@@ -50,19 +50,19 @@ body,
   margin: 0;
   padding: 0;
 }
-/* line 46, onepage-scroll.scss */
+/* line 46, ../src/onepage-scroll.scss */
 .onepage-pagination li {
   padding: 0;
   text-align: center;
 }
-/* line 49, onepage-scroll.scss */
+/* line 49, ../src/onepage-scroll.scss */
 .onepage-pagination li a {
   padding: 10px;
   width: 4px;
   height: 4px;
   display: block;
 }
-/* line 54, onepage-scroll.scss */
+/* line 54, ../src/onepage-scroll.scss */
 .onepage-pagination li a:before {
   content: '';
   position: absolute;
@@ -75,7 +75,7 @@ body,
   -o-border-radius: 10px;
   border-radius: 10px;
 }
-/* line 62, onepage-scroll.scss */
+/* line 62, ../src/onepage-scroll.scss */
 .onepage-pagination li a.active:before {
   width: 10px;
   height: 10px;
@@ -85,12 +85,12 @@ body,
   left: 8px;
 }
 
-/* line 75, onepage-scroll.scss */
+/* line 75, ../src/onepage-scroll.scss */
 .disable-onepage-scroll,
 .disable-onepage-scroll .wrapper {
   overflow: auto;
 }
-/* line 79, onepage-scroll.scss */
+/* line 79, ../src/onepage-scroll.scss */
 .disable-onepage-scroll .onepage-wrapper {
   -webkit-transform: none !important;
   -moz-transform: none !important;
@@ -99,17 +99,17 @@ body,
   transform: none !important;
   min-height: 100%;
 }
-/* line 82, onepage-scroll.scss */
+/* line 82, ../src/onepage-scroll.scss */
 .disable-onepage-scroll .onepage-wrapper .section {
   position: relative !important;
   top: auto !important;
 }
-/* line 87, onepage-scroll.scss */
+/* line 87, ../src/onepage-scroll.scss */
 .disable-onepage-scroll .onepage-pagination {
   display: none;
 }
 
-/* line 92, onepage-scroll.scss */
+/* line 92, ../src/onepage-scroll.scss */
 body.disabled-onepage-scroll,
 .disabled-onepage-scroll .onepage-wrapper {
   position: inherit;
