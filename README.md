@@ -1,4 +1,4 @@
-#jQuery One Page Scroll plugin
+# jQuery One Page Scroll plugin
 
 This plugin is a full refactored fork of [Pete R. One Page Scroll plugin](https://github.com/peachananr/onepage-scroll).
 
@@ -49,13 +49,13 @@ You can also trigger page move programmatically:
 To get the onepage_scroll object simply call:
 
 ```javascript
-	onepage_scroll = $('.main').data('onepage_scroll')
+onepage_scroll = $('.main').data('onepage_scroll')
 ```
 
 or if just one element (it should be) just call:
 
 ```javascript
-	onepage_scroll = $('.main').onepage_scroll()
+onepage_scroll = $('.main').onepage_scroll()
 ```
 
 You can then chain the needed methods.
@@ -63,23 +63,37 @@ You can then chain the needed methods.
 ### .moveUp()
 This method allows you to move the page up by one. This action is equivalent to scrolling up/swiping down.
 
-````javascript
-  $(".main").data('onepage_scroll').moveUp();
-````
+```javascript
+$(".main").data('onepage_scroll').moveUp();
+```
 
-### $.fn.moveDown()
+### .moveDown()
 This method allows you to move the page down by one. This action is equivalent to scrolling down/swiping up.
 
-````javascript
-  $(".main").data('onepage_scroll').moveDown();
-````
+```javascript
+$(".main").data('onepage_scroll').moveDown();
+```
 
-### $.fn.moveTo(page_index)
+### .moveTo(page_index)
 This method allows you to move to the specified page index programatically.
 
-````javascript
-  $(".main").data('onepage_scroll').moveTo(3);
-````
+```javascript
+$(".main").data('onepage_scroll').moveTo(3);
+```
+
+### .destroy()
+This method completely removes all bindings, added classes, stylings and elements.
+
+```javascript
+$(".main").data('onepage_scroll').destroy();
+```
+
+### .create()
+This method allows you to manually recreate the plugin bindings, classes, stylings and elements after the destroy call.
+
+```javascript
+$(".main").data('onepage_scroll').create();
+```
 
 ## Callbacks
 You can use callbacks to perform actions before or after the page move.
@@ -87,24 +101,24 @@ You can use callbacks to perform actions before or after the page move.
 ### beforeMove(current_page_index)
 This callback gets called before the plugin performs its move.
 
-````javascript
-  $(".main").onepage_scroll({
-    beforeMove: function(index) {
-      ...
-    }
-  });
-````
+```javascript
+$(".main").onepage_scroll({
+	beforeMove: function(index) {
+		...
+	}
+});
+```
 
 ### afterMove(next_page_index)
 This callback gets called after the move animation was performed.
 
-````javascript
-  $(".main").onepage_scroll({
-    afterMove: function(index) {
-      ...
-    }
-  });
-````
+```javascript
+$(".main").onepage_scroll({
+	afterMove: function(index) {
+		...
+	}
+});
+```
 
 ## Resources
 - [Pete R. One Page Scroll plugin: Original Plugin](https://github.com/peachananr/onepage-scroll)

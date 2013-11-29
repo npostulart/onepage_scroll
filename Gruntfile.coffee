@@ -16,13 +16,13 @@ module.exports = (grunt) ->
                 files:
                     'jquery.onepage-scroll.min.js': 'jquery.onepage-scroll.js'
                 options:
-                    preserveComments: 'some',
-                    sourceMap: (filepath) ->
-                        # path to save .map file
-                        return "#{filepath}.map"
-                    sourceMappingURL: (filepath) ->
-                        # path to .map in js file
-                        return require('path').basename(filepath) + '.map'
+                    preserveComments: 'some'
+                    # sourceMap: (filepath) ->
+                    #     # path to save .map file
+                    #     return "#{filepath}.map"
+                    # sourceMappingURL: (filepath) ->
+                    #     # path to .map in js file
+                    #     return require('path').basename(filepath) + '.map'
         compass:
             prod:
                 options:
@@ -35,6 +35,12 @@ module.exports = (grunt) ->
                 src: ['jquery.onepage-scroll.js', 'onepage-scroll.css']
                 dest: 'Demo/'
         watch:
+            coffee:
+                files: ['jquery.onepage-scroll.coffee']
+                tasks: 'coffee:compile'
+            compass:
+                files: ['onepage-scroll.scss']
+                tasks: 'compass:dev'
             all:
                 files: ['jquery.onepage-scroll.js', 'onepage-scroll.css']
                 tasks: 'copy'
@@ -45,5 +51,6 @@ module.exports = (grunt) ->
     grunt.loadNpmTasks 'grunt-contrib-copy'
     grunt.loadNpmTasks 'grunt-contrib-watch'
 
-    grunt.registerTask 'dev', ['coffee:compileWithMaps', 'compass:dev', 'copy']
-    grunt.registerTask 'default', ['coffee:compile', 'uglify', 'compass:prod', 'copy']
+    grunt.registerTask 'dev', ['coffee:compile', 'compass:dev', 'copy']
+    grunt.registerTask 'prod', ['coffee:compile', 'uglify', 'compass:prod', 'copy']
+    grunt.registerTask 'default', ['watch']
