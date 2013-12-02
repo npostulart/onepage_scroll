@@ -1,12 +1,22 @@
 #
 # Name    : jQuery Onepage Scroll
 # Author  : Niklas Postulart, @niklaspostulart
-# Version : 0.9.2
-# Repo    : <repo url>
-# Website : <website url>
+# Version : 1.0.3
+# Repo    : https://github.com/npostulart/onepage-scroll
+# Website : http://niklaspostulart.de
 #
 
 jQuery ($) ->
+
+	# Partial class remove plugin
+	# partialMath = the class partial to match against, like "btn-" to match "btn-danger btn-active" but not "btn"
+	# endOrBegin = omit for beginning match; provide a 'truthy' value to only find classes ending with match
+	$.fn.stripClass = ( partialMatch, endOrBegin ) ->
+		x = new RegExp (if not endOrBegin then "\\b" else "\\S+" ) + partialMatch + "\\S*", 'g'
+		@.attr 'class', ( i, c ) ->
+			return if not c
+			c.replace x, ''
+		@
 
 	$.onepage_scroll = ( element, options ) ->
 		# plugin settings
@@ -94,8 +104,6 @@ jQuery ($) ->
 
 			# Update the Browser URL if enabled
 			@updateHistory index if @settings.updateURL
-			# Call the animation function
-			# @transformPage index
 
 			# Call the animation function
 			if @settings.smooth and page_index isnt index
@@ -128,16 +136,16 @@ jQuery ($) ->
 		# Bind swipeDown and swipeUp Events
 		@bindSwipeEvents = () ->
 			hammer = @$element.hammer()
+			# Bind swipedown gesture
 			@$element.hammer().on 'swipedown.onepage', (e) =>
-				# Do nothing if onepagescroll is disabled
-				return if $("body").hasClass "disabled-onepage-scroll"
 				e.preventDefault()
+				# prevent default gesture event
 				e.gesture.preventDefault()
 				@moveUp()
+			# Bind swipeup gesture
 			.on 'swipeup.onepage', (e) =>
-				# Do nothing if onepagescroll is disabled
-				return if $("body").hasClass "disabled-onepage-scroll"
 				e.preventDefault()
+				# prevent default gesture event
 				e.gesture.preventDefault()
 				@moveDown()
 			@
@@ -153,39 +161,36 @@ jQuery ($) ->
 		@bindKeyEvents = () ->
 			$(document).on 'keydown.onepage', ( e ) =>
 				tag = e.target.nodeName
-				return if tag is 'INPUT' or tag is 'TEXTAREA' or $("body").hasClass "disabled-onepage-scroll"
+				return if tag is 'INPUT' or tag is 'TEXTAREA'
 				switch e.which
-					when 33, 38 then @moveUp()
-					when 34, 40 then @moveDown()
-					when 36 then @moveTo 1
-					when 35 then @moveTo @total
+					when 33, 38 then @moveUp() # page up, arrow up
+					when 34, 40 then @moveDown() # page down, arrow down
+					when 36 then @moveTo 1 # home
+					when 35 then @moveTo @total # end
 					else return
 				e.preventDefault()
 			@
 
 		# Unbind key Events
 		@unbindKeyEvents = () ->
-			$(document).unbin 'keydown.onepage'
+			$(document).off 'keydown.onepage'
 			@
+
+		# Return if viewport is too small
+		@viewportTooSmall = () ->
+			return true if @settings.responsiveFallbackWidth isnt false and $(window).width() < @settings.responsiveFallbackWidth
+			return true if @settings.responsiveFallbackHeight isnt false and $(window).height() < @settings.responsiveFallbackHeight
+			return false
 
 		# Responsive behaviour
 		@watchResponsive = () ->
 			# if window smaller than fallback size in settings
-			if $(window).width() < @settings.responsiveFallback
-				# Add class to body and unbind all events
-				$("body").addClass "disabled-onepage-scroll"
-				@unbindScrollEvents()
-				@unbindSwipeEvents()
+			if @viewportTooSmall()
+				# Destroy Plugin
+				@destroy() if @state is 'created'
 			else
-				# Remove disabled class if set and start at top
-				if $("body").hasClass "disabled-onepage-scroll"
-					$("body").removeClass "disabled-onepage-scroll"
-					$("html, body, .wrapper").animate
-						scrollTop: 0
-					, "fast"
-
-				@bindSwipeEvents()
-				@bindScrollEvents()
+				# Create Plugin
+				@create() if @state isnt 'created'
 			@
 
 		# Scroll function
@@ -210,6 +215,7 @@ jQuery ($) ->
 				@moveTo page_index
 			@
 
+		# Set class and css for the sections and create pagination elements
 		@createSections = () ->
 			# Set css for each section
 			topPos = 0
@@ -221,26 +227,46 @@ jQuery ($) ->
 				# Add element to paginationlist
 				@paginationList += "<li><a data-index='#{i+1}' href='##{i+1}'></a></li>" if @settings.pagination
 
+		# Remove class and css for the sections
+		@destroySections = () ->
+			# Remove css and class for each section
+			@sections.removeClass("section active").removeAttr("data-index style")
+
+		# Destroy all plugin bindings and modifications on DOM
 		@destroy = () ->
+			# Check if Plugin is created
 			if @state is 'created'
-				@$element.removeClass("onepage-scroll").removeAttr("style")
-				@paginationList = ""
-				$.each @sections, ( i, elem ) =>
-					$(elem).removeClass("section").removeAttr("data-index").removeAttr("style")
+				# Call before destroy callback
+				@settings.beforeDestroy()
+				# Remove classes and style attributes
+				$('html, body').removeClass 'onepage-scroll-enabled'
+				$('body').stripClass "viewing-page-"
+				@$element.removeClass("onepage-wrapper").removeAttr("style")
+				# Destroy section bindings
+				@destroySections()
+				# Remove pagination handling and elements
 				if @settings.pagination
+					# unbind events before remove
 					$("ul.onepage-pagination").off 'click.onepage', "li a"
 					$("ul.onepage-pagination").remove()
-				if @settings.keyboard
-					@unbindKeyEvents
-				if @settings.responsiveFallback isnt false
-					$(window).off 'resize.onepage'
+				# Remove keyboard bindings
+				@unbindKeyEvents() if @settings.keyboard
+				# Remove swipe and scroll bindings
 				@unbindSwipeEvents()
 				@unbindScrollEvents()
+				# Set state
 				@state = 'destroyed'
+				# Call after destroy callback
+				@settings.afterDestroy()
 			@
 
+		# Create all plugin bindings and modifications on DOM
 		@create = () ->
 			if @state isnt 'created'
+				# Do nothing if viewport is too small
+				return if @viewportTooSmall()
+				# Call before create callback
+				@settings.beforeCreate()
 				# All sections
 				@sections = $ @settings.sectionContainer
 				# Section count
@@ -249,9 +275,11 @@ jQuery ($) ->
 				@lastAnimation = 0
 				# List of pagination elements
 				@paginationList = ""
-
+				# Add styling to html and body
+				$('html, body').addClass 'onepage-scroll-enabled'
 				# Prepare everything before binding wheel scroll
-				@$element.addClass("onepage-wrapper").css("position", "relative")
+				@$element.addClass("onepage-wrapper").css "position", "relative"
+				# Create section styling and binding
 				@createSections()
 				# Create pagination
 				if @settings.pagination
@@ -260,30 +288,21 @@ jQuery ($) ->
 					@$element.find(".onepage-pagination").css "margin-top", posTop
 					# Bind pagination events
 					@bindPagination()
-
 				# Resets the view to first slide
 				@reset()
-
 				# Check for url hash
 				if window.location.hash isnt "" and window.location.hash isnt "#1"
 					init_index = window.location.hash.replace "#", ""
 					@moveTo init_index
-
-				# Enable responsive Fallback if set
-				if @settings.responsiveFallback isnt false
-					$(window).on 'resize.onepage', () =>
-						@watchResponsive()
-					@watchResponsive()
-				else
-					# Bind swipe and scroll Events
-					@bindSwipeEvents()
-					@bindScrollEvents()
-
+				# Bind swipe and scroll Events
+				@bindSwipeEvents()
+				@bindScrollEvents()
 				# Bind keyboard events
-				if @settings.keyboard
-					@bindKeyEvents()
-
+				@bindKeyEvents() if @settings.keyboard
+				# Set state
 				@state = 'created'
+				# Call after create callback
+				@settings.afterCreate()
 			@
 
 		@reset = () ->
@@ -296,6 +315,11 @@ jQuery ($) ->
 		@init = ->
 			# Concatenate settings and options
 			@settings = $.extend( {}, @defaults, options )
+
+			# Enable responsive Fallback if set
+			if @settings.responsiveFallbackWidth isnt false or @settings.responsiveFallbackHeight isnt false
+				$(window).on 'resize.onepage', () =>
+					@watchResponsive()
 
 			# Create everything
 			@create()
@@ -319,8 +343,13 @@ jQuery ($) ->
 		beforeMove: $.noop # This option accepts a callback function. The function will be called before the page moves.
 		afterMove: $.noop # This option accepts a callback function. The function will be called after the page moves.
 		loop: false # You can have the page loop back to the top/bottom when the user navigates at up/down on the first/last page.
-		responsiveFallback: false # You can fallback to normal page scroll by defining the width of the browser in which you want the responsive fallback to be triggered. For example, set this to 600 and whenever the browser's width is less than 600, the fallback will kick in.
+		responsiveFallbackWidth: false # You can fallback to normal page scroll by defining the width of the browser in which you want the responsive fallback to be triggered. For example, set this to 600 and whenever the browser's width is less than 600, the fallback will kick in.
+		responsiveFallbackHeight: false # You can fallback to normal page scroll by defining the height of the browser in which you want the responsive fallback to be triggered. For example, set this to 600 and whenever the browser's height is less than 600, the fallback will kick in.
 		smooth: false # You can set if a direct move to a slide should iterate over the other slides or not (direct jump)
+		beforeCreate: $.noop # This option accept a callback function. The function will be called before the onepagescroll is created.
+		afterCreate: $.noop # This option accept a callback function. The function will be called after the onepagescroll is created.
+		beforeDestroy: $.noop # This option accept a callback function. The function will be called before the onepagescroll is destroyed.
+		afterDestroy: $.noop # This option accept a callback function. The function will be called after the onepagescroll is destroyed.
 
 	$.fn.onepage_scroll = ( options ) ->
 		# for each element

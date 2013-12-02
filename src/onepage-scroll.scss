@@ -1,32 +1,24 @@
 @import "compass/css3";
 
-html {
-  position: inherit;
-}
-
 html,
 body {
-  margin: 0;
-  overflow: hidden;
-  @include single-transition(opacity .4s);
+  &.onepage-scroll-enabled {
+    margin: 0;
+    padding: 0;
+    overflow: hidden;
+    position: static;
+    display: block;
+    width: 100%;
+    height: 100%;
+  }
 }
 
-html,
-body,
 .onepage-wrapper {
   display: block;
-  position: static;
+  width: 100%;
+  height: 100%;
   padding: 0;
-  width: 100%;
-  height: 100%;
-}
-
-.onepage-wrapper {
-  width: 100%;
-  height: 100%;
-  display: block;
   position: relative;
-  padding: 0;
   -webkit-transform-style: preserve-3d;
   .section {
     width: 100%;
@@ -69,27 +61,4 @@ body,
       }
     }
   }
-}
-
-.disable-onepage-scroll {
-  &,
-  .wrapper {
-    overflow: auto;
-  }
-  .onepage-wrapper {
-    @include transform(none !important);
-    min-height: 100%;
-    .section {
-      position: relative !important;
-      top: auto !important;
-    }
-  }
-  .onepage-pagination {
-    display: none;
-  }
-}
-
-body.disabled-onepage-scroll,
-.disabled-onepage-scroll .onepage-wrapper {
-  position: inherit;
 }
