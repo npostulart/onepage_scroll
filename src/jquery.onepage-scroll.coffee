@@ -1,21 +1,23 @@
 #
 # Name    : jQuery Onepage Scroll
 # Author  : Niklas Postulart, @niklaspostulart
-# Version : 1.0.3
+# Version : 1.0.4
 # Repo    : https://github.com/npostulart/onepage-scroll
 # Website : http://niklaspostulart.de
 #
 
-jQuery ($) ->
+"use strict"
+
+(($, Modernizr) ->
 
 	# Partial class remove plugin
 	# partialMath = the class partial to match against, like "btn-" to match "btn-danger btn-active" but not "btn"
 	# endOrBegin = omit for beginning match; provide a 'truthy' value to only find classes ending with match
 	$.fn.stripClass = ( partialMatch, endOrBegin ) ->
-		x = new RegExp (if not endOrBegin then "\\b" else "\\S+" ) + partialMatch + "\\S*", 'g'
-		@.attr 'class', ( i, c ) ->
+		x = new RegExp (if not endOrBegin then "\\b" else "\\S+" ) + partialMatch + "\\S*", "g"
+		@.attr "class", ( i, c ) ->
 			return if not c
-			c.replace x, ''
+			c.replace x, ""
 		@
 
 	$.onepage_scroll = ( element, options ) ->
@@ -26,7 +28,7 @@ jQuery ($) ->
 		@$element = $ element
 
 		# Current Plugin state
-		@state = ''
+		@state = ""
 
 		# Waittime for next scroll/swipe-Event
 		@quietPeriod = 500
@@ -37,7 +39,7 @@ jQuery ($) ->
 		# Scroll Animation
 		# afterMove function is called after animation
 		@transformPage = ( index, callback ) ->
-			callback = if typeof callback isnt 'function' then $.noop else callback
+			callback = if typeof callback isnt "function" then $.noop else callback
 			pos = ( ( index - 1 ) * 100 ) * -1
 			# If Browser doesn't support transitions use jQuery animate
 			if not supportTransition()
@@ -53,7 +55,7 @@ jQuery ($) ->
 					"transition": "all #{@settings.animationTime}ms #{@settings.easing}"
 					"-webkit-transform": "translate3d(0, #{pos}%, 0)"
 					"-webkit-transition": "all #{@settings.animationTime}ms #{@settings.easing}"
-				@$element.one 'webkitTransitionEnd otransitionend oTransitionEnd msTransitionEnd transitionend', () =>
+				@$element.one "webkitTransitionEnd otransitionend oTransitionEnd msTransitionEnd transitionend", () =>
 					@settings.afterMove index
 					callback index
 			@
@@ -72,7 +74,7 @@ jQuery ($) ->
 		@moveTo = ( page_index ) ->
 			# get current active element
 			current = $("#{@settings.sectionContainer}.active")
-			current_index = current.data('index')
+			current_index = current.data("index")
 
 			return if page_index is current_index
 			index = page_index
@@ -116,13 +118,13 @@ jQuery ($) ->
 		@updateHistory = ( index ) ->
 			# Check if function exists
 			if history.replaceState
-				href = window.location.href.substr 0, "#{window.location.href.indexOf('#')}##{(index)}"
+				href = window.location.href.substr 0, "#{window.location.href.indexOf("#")}##{(index)}"
 				history.pushState {}, document.title, href
 			@
 
 		# Bind scroll Events
 		@bindScrollEvents = () ->
-			$(document).bind 'mousewheel.onepage DOMMouseScroll.onepage', (e) =>
+			$(document).bind "mousewheel.onepage DOMMouseScroll.onepage", (e) =>
 				e.preventDefault()
 				delta = e.originalEvent.wheelDelta || -e.originalEvent.detail
 				@init_scroll e, delta
@@ -137,13 +139,13 @@ jQuery ($) ->
 		@bindSwipeEvents = () ->
 			hammer = @$element.hammer()
 			# Bind swipedown gesture
-			@$element.hammer().on 'swipedown.onepage', (e) =>
+			@$element.hammer().on "swipedown.onepage", (e) =>
 				e.preventDefault()
 				# prevent default gesture event
 				e.gesture.preventDefault()
 				@moveUp()
 			# Bind swipeup gesture
-			.on 'swipeup.onepage', (e) =>
+			.on "swipeup.onepage", (e) =>
 				e.preventDefault()
 				# prevent default gesture event
 				e.gesture.preventDefault()
@@ -153,15 +155,15 @@ jQuery ($) ->
 		# Unbind swipeDown and swipeUp Events
 		@unbindSwipeEvents = () ->
 			hammer = @$element.hammer()
-			hammer.off 'swipedown.onepage'
-			hammer.off 'swipeup.onepage'
+			hammer.off "swipedown.onepage"
+			hammer.off "swipeup.onepage"
 			@
 
 		# Bind key Events
 		@bindKeyEvents = () ->
-			$(document).on 'keydown.onepage', ( e ) =>
+			$(document).on "keydown.onepage", ( e ) =>
 				tag = e.target.nodeName
-				return if tag is 'INPUT' or tag is 'TEXTAREA'
+				return if tag is "INPUT" or tag is "TEXTAREA"
 				switch e.which
 					when 33, 38 then @moveUp() # page up, arrow up
 					when 34, 40 then @moveDown() # page down, arrow down
@@ -173,7 +175,7 @@ jQuery ($) ->
 
 		# Unbind key Events
 		@unbindKeyEvents = () ->
-			$(document).off 'keydown.onepage'
+			$(document).off "keydown.onepage"
 			@
 
 		# Return if viewport is too small
@@ -187,10 +189,10 @@ jQuery ($) ->
 			# if window smaller than fallback size in settings
 			if @viewportTooSmall()
 				# Destroy Plugin
-				@destroy() if @state is 'created'
+				@destroy() if @state is "created"
 			else
 				# Create Plugin
-				@create() if @state isnt 'created'
+				@create() if @state isnt "created"
 			@
 
 		# Scroll function
@@ -209,7 +211,7 @@ jQuery ($) ->
 
 		# Bind pagination events
 		@bindPagination = () ->
-			$(".onepage-pagination").on 'click.onepage', "li a", (e) =>
+			$(".onepage-pagination").on "click.onepage", "li a", (e) =>
 				# get index value from link
 				page_index = $(e.currentTarget).data "index"
 				@moveTo page_index
@@ -235,19 +237,19 @@ jQuery ($) ->
 		# Destroy all plugin bindings and modifications on DOM
 		@destroy = () ->
 			# Check if Plugin is created
-			if @state is 'created'
+			if @state is "created"
 				# Call before destroy callback
 				@settings.beforeDestroy()
 				# Remove classes and style attributes
-				$('html, body').removeClass 'onepage-scroll-enabled'
-				$('body').stripClass "viewing-page-"
+				$("html, body").removeClass "onepage-scroll-enabled"
+				$("body").stripClass "viewing-page-"
 				@$element.removeClass("onepage-wrapper").removeAttr("style")
 				# Destroy section bindings
 				@destroySections()
 				# Remove pagination handling and elements
 				if @settings.pagination
 					# unbind events before remove
-					$("ul.onepage-pagination").off 'click.onepage', "li a"
+					$("ul.onepage-pagination").off "click.onepage", "li a"
 					$("ul.onepage-pagination").remove()
 				# Remove keyboard bindings
 				@unbindKeyEvents() if @settings.keyboard
@@ -255,14 +257,14 @@ jQuery ($) ->
 				@unbindSwipeEvents()
 				@unbindScrollEvents()
 				# Set state
-				@state = 'destroyed'
+				@state = "destroyed"
 				# Call after destroy callback
 				@settings.afterDestroy()
 			@
 
 		# Create all plugin bindings and modifications on DOM
 		@create = () ->
-			if @state isnt 'created'
+			if @state isnt "created"
 				# Do nothing if viewport is too small
 				return if @viewportTooSmall()
 				# Call before create callback
@@ -276,7 +278,7 @@ jQuery ($) ->
 				# List of pagination elements
 				@paginationList = ""
 				# Add styling to html and body
-				$('html, body').addClass 'onepage-scroll-enabled'
+				$("html, body").addClass "onepage-scroll-enabled"
 				# Prepare everything before binding wheel scroll
 				@$element.addClass("onepage-wrapper").css "position", "relative"
 				# Create section styling and binding
@@ -300,7 +302,7 @@ jQuery ($) ->
 				# Bind keyboard events
 				@bindKeyEvents() if @settings.keyboard
 				# Set state
-				@state = 'created'
+				@state = "created"
 				# Call after create callback
 				@settings.afterCreate()
 			@
@@ -318,7 +320,7 @@ jQuery ($) ->
 
 			# Enable responsive Fallback if set
 			if @settings.responsiveFallbackWidth isnt false or @settings.responsiveFallbackHeight isnt false
-				$(window).on 'resize.onepage', () =>
+				$(window).on "resize.onepage", () =>
 					@watchResponsive()
 
 			# Create everything
@@ -355,9 +357,12 @@ jQuery ($) ->
 		# for each element
 		@.each ->
 			# bind plugin only if not set
-			if $(@).data( 'onepage_scroll' ) is undefined
+			if $(@).data( "onepage_scroll" ) is undefined
 				plugin = new $.onepage_scroll @, options
-				$(@).data 'onepage_scroll', plugin
+				$(@).data "onepage_scroll", plugin
 		# If only one element and data element is set return plugin
-		if @.length is 1 and $(@).data( 'onepage_scroll' ) isnt undefined
-			$(@).data 'onepage_scroll'
+		if @.length is 1 and $(@).data( "onepage_scroll" ) isnt undefined
+			$(@).data "onepage_scroll"
+
+	$.fn.onepage_scroll
+)( jQuery, Modernizr )

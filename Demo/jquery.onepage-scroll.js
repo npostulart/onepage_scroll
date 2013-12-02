@@ -1,13 +1,14 @@
 (function() {
-  jQuery(function($) {
+  "use strict";
+  (function($, Modernizr) {
     $.fn.stripClass = function(partialMatch, endOrBegin) {
       var x;
-      x = new RegExp((!endOrBegin ? "\\b" : "\\S+") + partialMatch + "\\S*", 'g');
-      this.attr('class', function(i, c) {
+      x = new RegExp((!endOrBegin ? "\\b" : "\\S+") + partialMatch + "\\S*", "g");
+      this.attr("class", function(i, c) {
         if (!c) {
           return;
         }
-        return c.replace(x, '');
+        return c.replace(x, "");
       });
       return this;
     };
@@ -15,7 +16,7 @@
       var supportTransition;
       this.settings = {};
       this.$element = $(element);
-      this.state = '';
+      this.state = "";
       this.quietPeriod = 500;
       supportTransition = function() {
         return Modernizr.csstransitions && Modernizr.csstransforms3d;
@@ -23,7 +24,7 @@
       this.transformPage = function(index, callback) {
         var pos,
           _this = this;
-        callback = typeof callback !== 'function' ? $.noop : callback;
+        callback = typeof callback !== "function" ? $.noop : callback;
         pos = ((index - 1) * 100) * -1;
         if (!supportTransition()) {
           this.$element.animate({
@@ -39,7 +40,7 @@
             "-webkit-transform": "translate3d(0, " + pos + "%, 0)",
             "-webkit-transition": "all " + this.settings.animationTime + "ms " + this.settings.easing
           });
-          this.$element.one('webkitTransitionEnd otransitionend oTransitionEnd msTransitionEnd transitionend', function() {
+          this.$element.one("webkitTransitionEnd otransitionend oTransitionEnd msTransitionEnd transitionend", function() {
             _this.settings.afterMove(index);
             return callback(index);
           });
@@ -60,7 +61,7 @@
         var current, current_index, index, next,
           _this = this;
         current = $("" + this.settings.sectionContainer + ".active");
-        current_index = current.data('index');
+        current_index = current.data("index");
         if (page_index === current_index) {
           return;
         }
@@ -98,14 +99,14 @@
       this.updateHistory = function(index) {
         var href;
         if (history.replaceState) {
-          href = window.location.href.substr(0, "" + (window.location.href.indexOf('#')) + "#" + index);
+          href = window.location.href.substr(0, "" + (window.location.href.indexOf("#")) + "#" + index);
           history.pushState({}, document.title, href);
         }
         return this;
       };
       this.bindScrollEvents = function() {
         var _this = this;
-        $(document).bind('mousewheel.onepage DOMMouseScroll.onepage', function(e) {
+        $(document).bind("mousewheel.onepage DOMMouseScroll.onepage", function(e) {
           var delta;
           e.preventDefault();
           delta = e.originalEvent.wheelDelta || -e.originalEvent.detail;
@@ -121,11 +122,11 @@
         var hammer,
           _this = this;
         hammer = this.$element.hammer();
-        this.$element.hammer().on('swipedown.onepage', function(e) {
+        this.$element.hammer().on("swipedown.onepage", function(e) {
           e.preventDefault();
           e.gesture.preventDefault();
           return _this.moveUp();
-        }).on('swipeup.onepage', function(e) {
+        }).on("swipeup.onepage", function(e) {
           e.preventDefault();
           e.gesture.preventDefault();
           return _this.moveDown();
@@ -135,16 +136,16 @@
       this.unbindSwipeEvents = function() {
         var hammer;
         hammer = this.$element.hammer();
-        hammer.off('swipedown.onepage');
-        hammer.off('swipeup.onepage');
+        hammer.off("swipedown.onepage");
+        hammer.off("swipeup.onepage");
         return this;
       };
       this.bindKeyEvents = function() {
         var _this = this;
-        $(document).on('keydown.onepage', function(e) {
+        $(document).on("keydown.onepage", function(e) {
           var tag;
           tag = e.target.nodeName;
-          if (tag === 'INPUT' || tag === 'TEXTAREA') {
+          if (tag === "INPUT" || tag === "TEXTAREA") {
             return;
           }
           switch (e.which) {
@@ -170,7 +171,7 @@
         return this;
       };
       this.unbindKeyEvents = function() {
-        $(document).off('keydown.onepage');
+        $(document).off("keydown.onepage");
         return this;
       };
       this.viewportTooSmall = function() {
@@ -184,11 +185,11 @@
       };
       this.watchResponsive = function() {
         if (this.viewportTooSmall()) {
-          if (this.state === 'created') {
+          if (this.state === "created") {
             this.destroy();
           }
         } else {
-          if (this.state !== 'created') {
+          if (this.state !== "created") {
             this.create();
           }
         }
@@ -212,7 +213,7 @@
       };
       this.bindPagination = function() {
         var _this = this;
-        $(".onepage-pagination").on('click.onepage', "li a", function(e) {
+        $(".onepage-pagination").on("click.onepage", "li a", function(e) {
           var page_index;
           page_index = $(e.currentTarget).data("index");
           return _this.moveTo(page_index);
@@ -238,14 +239,14 @@
         return this.sections.removeClass("section active").removeAttr("data-index style");
       };
       this.destroy = function() {
-        if (this.state === 'created') {
+        if (this.state === "created") {
           this.settings.beforeDestroy();
-          $('html, body').removeClass('onepage-scroll-enabled');
-          $('body').stripClass("viewing-page-");
+          $("html, body").removeClass("onepage-scroll-enabled");
+          $("body").stripClass("viewing-page-");
           this.$element.removeClass("onepage-wrapper").removeAttr("style");
           this.destroySections();
           if (this.settings.pagination) {
-            $("ul.onepage-pagination").off('click.onepage', "li a");
+            $("ul.onepage-pagination").off("click.onepage", "li a");
             $("ul.onepage-pagination").remove();
           }
           if (this.settings.keyboard) {
@@ -253,14 +254,14 @@
           }
           this.unbindSwipeEvents();
           this.unbindScrollEvents();
-          this.state = 'destroyed';
+          this.state = "destroyed";
           this.settings.afterDestroy();
         }
         return this;
       };
       this.create = function() {
         var init_index, posTop;
-        if (this.state !== 'created') {
+        if (this.state !== "created") {
           if (this.viewportTooSmall()) {
             return;
           }
@@ -269,7 +270,7 @@
           this.total = this.sections.length;
           this.lastAnimation = 0;
           this.paginationList = "";
-          $('html, body').addClass('onepage-scroll-enabled');
+          $("html, body").addClass("onepage-scroll-enabled");
           this.$element.addClass("onepage-wrapper").css("position", "relative");
           this.createSections();
           if (this.settings.pagination) {
@@ -288,7 +289,7 @@
           if (this.settings.keyboard) {
             this.bindKeyEvents();
           }
-          this.state = 'created';
+          this.state = "created";
           this.settings.afterCreate();
         }
         return this;
@@ -305,7 +306,7 @@
         var _this = this;
         this.settings = $.extend({}, this.defaults, options);
         if (this.settings.responsiveFallbackWidth !== false || this.settings.responsiveFallbackHeight !== false) {
-          $(window).on('resize.onepage', function() {
+          $(window).on("resize.onepage", function() {
             return _this.watchResponsive();
           });
         }
@@ -333,18 +334,19 @@
       beforeDestroy: $.noop,
       afterDestroy: $.noop
     };
-    return $.fn.onepage_scroll = function(options) {
+    $.fn.onepage_scroll = function(options) {
       this.each(function() {
         var plugin;
-        if ($(this).data('onepage_scroll') === void 0) {
+        if ($(this).data("onepage_scroll") === void 0) {
           plugin = new $.onepage_scroll(this, options);
-          return $(this).data('onepage_scroll', plugin);
+          return $(this).data("onepage_scroll", plugin);
         }
       });
-      if (this.length === 1 && $(this).data('onepage_scroll') !== void 0) {
-        return $(this).data('onepage_scroll');
+      if (this.length === 1 && $(this).data("onepage_scroll") !== void 0) {
+        return $(this).data("onepage_scroll");
       }
     };
-  });
+    return $.fn.onepage_scroll;
+  })(jQuery, Modernizr);
 
 }).call(this);
