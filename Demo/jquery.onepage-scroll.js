@@ -1,5 +1,16 @@
 (function() {
   jQuery(function($) {
+    $.fn.stripClass = function(partialMatch, endOrBegin) {
+      var x;
+      x = new RegExp((!endOrBegin ? "\\b" : "\\S+") + partialMatch + "\\S*", 'g');
+      this.attr('class', function(i, c) {
+        if (!c) {
+          return;
+        }
+        return c.replace(x, '');
+      });
+      return this;
+    };
     $.onepage_scroll = function(element, options) {
       var supportTransition;
       this.settings = {};
@@ -111,16 +122,10 @@
           _this = this;
         hammer = this.$element.hammer();
         this.$element.hammer().on('swipedown.onepage', function(e) {
-          if ($("body").hasClass("disabled-onepage-scroll")) {
-            return;
-          }
           e.preventDefault();
           e.gesture.preventDefault();
           return _this.moveUp();
         }).on('swipeup.onepage', function(e) {
-          if ($("body").hasClass("disabled-onepage-scroll")) {
-            return;
-          }
           e.preventDefault();
           e.gesture.preventDefault();
           return _this.moveDown();
@@ -139,7 +144,7 @@
         $(document).on('keydown.onepage', function(e) {
           var tag;
           tag = e.target.nodeName;
-          if (tag === 'INPUT' || tag === 'TEXTAREA' || $("body").hasClass("disabled-onepage-scroll")) {
+          if (tag === 'INPUT' || tag === 'TEXTAREA') {
             return;
           }
           switch (e.which) {
@@ -165,23 +170,27 @@
         return this;
       };
       this.unbindKeyEvents = function() {
-        $(document).unbin('keydown.onepage');
+        $(document).off('keydown.onepage');
         return this;
       };
+      this.viewportTooSmall = function() {
+        if (this.settings.responsiveFallbackWidth !== false && $(window).width() < this.settings.responsiveFallbackWidth) {
+          return true;
+        }
+        if (this.settings.responsiveFallbackHeight !== false && $(window).height() < this.settings.responsiveFallbackHeight) {
+          return true;
+        }
+        return false;
+      };
       this.watchResponsive = function() {
-        if ($(window).width() < this.settings.responsiveFallback) {
-          $("body").addClass("disabled-onepage-scroll");
-          this.unbindScrollEvents();
-          this.unbindSwipeEvents();
-        } else {
-          if ($("body").hasClass("disabled-onepage-scroll")) {
-            $("body").removeClass("disabled-onepage-scroll");
-            $("html, body, .wrapper").animate({
-              scrollTop: 0
-            }, "fast");
+        if (this.viewportTooSmall()) {
+          if (this.state === 'created') {
+            this.destroy();
           }
-          this.bindSwipeEvents();
-          this.bindScrollEvents();
+        } else {
+          if (this.state !== 'created') {
+            this.create();
+          }
         }
         return this;
       };
@@ -225,38 +234,42 @@
           }
         });
       };
+      this.destroySections = function() {
+        return this.sections.removeClass("section active").removeAttr("data-index style");
+      };
       this.destroy = function() {
-        var _this = this;
         if (this.state === 'created') {
-          this.$element.removeClass("onepage-scroll").removeAttr("style");
-          this.paginationList = "";
-          $.each(this.sections, function(i, elem) {
-            return $(elem).removeClass("section").removeAttr("data-index").removeAttr("style");
-          });
+          this.settings.beforeDestroy();
+          $('html, body').removeClass('onepage-scroll-enabled');
+          $('body').stripClass("viewing-page-");
+          this.$element.removeClass("onepage-wrapper").removeAttr("style");
+          this.destroySections();
           if (this.settings.pagination) {
             $("ul.onepage-pagination").off('click.onepage', "li a");
             $("ul.onepage-pagination").remove();
           }
           if (this.settings.keyboard) {
-            this.unbindKeyEvents;
-          }
-          if (this.settings.responsiveFallback !== false) {
-            $(window).off('resize.onepage');
+            this.unbindKeyEvents();
           }
           this.unbindSwipeEvents();
           this.unbindScrollEvents();
           this.state = 'destroyed';
+          this.settings.afterDestroy();
         }
         return this;
       };
       this.create = function() {
-        var init_index, posTop,
-          _this = this;
+        var init_index, posTop;
         if (this.state !== 'created') {
+          if (this.viewportTooSmall()) {
+            return;
+          }
+          this.settings.beforeCreate();
           this.sections = $(this.settings.sectionContainer);
           this.total = this.sections.length;
           this.lastAnimation = 0;
           this.paginationList = "";
+          $('html, body').addClass('onepage-scroll-enabled');
           this.$element.addClass("onepage-wrapper").css("position", "relative");
           this.createSections();
           if (this.settings.pagination) {
@@ -270,19 +283,13 @@
             init_index = window.location.hash.replace("#", "");
             this.moveTo(init_index);
           }
-          if (this.settings.responsiveFallback !== false) {
-            $(window).on('resize.onepage', function() {
-              return _this.watchResponsive();
-            });
-            this.watchResponsive();
-          } else {
-            this.bindSwipeEvents();
-            this.bindScrollEvents();
-          }
+          this.bindSwipeEvents();
+          this.bindScrollEvents();
           if (this.settings.keyboard) {
             this.bindKeyEvents();
           }
           this.state = 'created';
+          this.settings.afterCreate();
         }
         return this;
       };
@@ -295,7 +302,13 @@
         return $(window).scrollTop(0);
       };
       this.init = function() {
+        var _this = this;
         this.settings = $.extend({}, this.defaults, options);
+        if (this.settings.responsiveFallbackWidth !== false || this.settings.responsiveFallbackHeight !== false) {
+          $(window).on('resize.onepage', function() {
+            return _this.watchResponsive();
+          });
+        }
         this.create();
         return this;
       };
@@ -312,8 +325,13 @@
       beforeMove: $.noop,
       afterMove: $.noop,
       loop: false,
-      responsiveFallback: false,
-      smooth: false
+      responsiveFallbackWidth: false,
+      responsiveFallbackHeight: false,
+      smooth: false,
+      beforeCreate: $.noop,
+      afterCreate: $.noop,
+      beforeDestroy: $.noop,
+      afterDestroy: $.noop
     };
     return $.fn.onepage_scroll = function(options) {
       this.each(function() {

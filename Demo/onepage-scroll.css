@@ -1,46 +1,31 @@
-/* line 3, ../src/onepage-scroll.scss */
-html {
-  position: inherit;
-}
-
-/* line 7, ../src/onepage-scroll.scss */
-html,
-body {
+/* line 5, ../src/onepage-scroll.scss */
+html.onepage-scroll-enabled,
+body.onepage-scroll-enabled {
   margin: 0;
+  padding: 0;
   overflow: hidden;
-  -webkit-transition: opacity 0.4s, 1s;
-  -moz-transition: opacity 0.4s, 1s;
-  -o-transition: opacity 0.4s, 1s;
-  transition: opacity 0.4s, 1s;
-}
-
-/* line 14, ../src/onepage-scroll.scss */
-html,
-body,
-.onepage-wrapper {
-  display: block;
   position: static;
-  padding: 0;
+  display: block;
   width: 100%;
   height: 100%;
 }
 
-/* line 24, ../src/onepage-scroll.scss */
+/* line 16, ../src/onepage-scroll.scss */
 .onepage-wrapper {
+  display: block;
   width: 100%;
   height: 100%;
-  display: block;
-  position: relative;
   padding: 0;
+  position: relative;
   -webkit-transform-style: preserve-3d;
 }
-/* line 31, ../src/onepage-scroll.scss */
+/* line 23, ../src/onepage-scroll.scss */
 .onepage-wrapper .section {
   width: 100%;
   height: 100%;
 }
 
-/* line 38, ../src/onepage-scroll.scss */
+/* line 30, ../src/onepage-scroll.scss */
 .onepage-pagination {
   position: absolute;
   right: 10px;
@@ -50,19 +35,19 @@ body,
   margin: 0;
   padding: 0;
 }
-/* line 46, ../src/onepage-scroll.scss */
+/* line 38, ../src/onepage-scroll.scss */
 .onepage-pagination li {
   padding: 0;
   text-align: center;
 }
-/* line 49, ../src/onepage-scroll.scss */
+/* line 41, ../src/onepage-scroll.scss */
 .onepage-pagination li a {
   padding: 10px;
   width: 4px;
   height: 4px;
   display: block;
 }
-/* line 54, ../src/onepage-scroll.scss */
+/* line 46, ../src/onepage-scroll.scss */
 .onepage-pagination li a:before {
   content: '';
   position: absolute;
@@ -75,7 +60,7 @@ body,
   -o-border-radius: 10px;
   border-radius: 10px;
 }
-/* line 62, ../src/onepage-scroll.scss */
+/* line 54, ../src/onepage-scroll.scss */
 .onepage-pagination li a.active:before {
   width: 10px;
   height: 10px;
@@ -83,34 +68,4 @@ body,
   border: 1px solid black;
   margin-top: -4px;
   left: 8px;
-}
-
-/* line 75, ../src/onepage-scroll.scss */
-.disable-onepage-scroll,
-.disable-onepage-scroll .wrapper {
-  overflow: auto;
-}
-/* line 79, ../src/onepage-scroll.scss */
-.disable-onepage-scroll .onepage-wrapper {
-  -webkit-transform: none !important;
-  -moz-transform: none !important;
-  -ms-transform: none !important;
-  -o-transform: none !important;
-  transform: none !important;
-  min-height: 100%;
-}
-/* line 82, ../src/onepage-scroll.scss */
-.disable-onepage-scroll .onepage-wrapper .section {
-  position: relative !important;
-  top: auto !important;
-}
-/* line 87, ../src/onepage-scroll.scss */
-.disable-onepage-scroll .onepage-pagination {
-  display: none;
-}
-
-/* line 92, ../src/onepage-scroll.scss */
-body.disabled-onepage-scroll,
-.disabled-onepage-scroll .onepage-wrapper {
-  position: inherit;
 }
