@@ -1,7 +1,7 @@
 #
 # Name    : jQuery Onepage Scroll
 # Author  : Niklas Postulart, @niklaspostulart
-# Version : 1.0.4
+# Version : 1.0.5
 # Repo    : https://github.com/npostulart/onepage-scroll
 # Website : http://niklaspostulart.de
 #
@@ -287,7 +287,7 @@
 				if @settings.pagination
 					$("<ul class='onepage-pagination'>#{@paginationList}</ul>").prependTo "body"
 					posTop = (@$element.find(".onepage-pagination").height() / 2) * -1
-					@$element.find(".onepage-pagination").css "margin-top", posTop
+					$(".onepage-pagination").css "margin-top", posTop
 					# Bind pagination events
 					@bindPagination()
 				# Resets the view to first slide
