@@ -276,7 +276,7 @@
           if (this.settings.pagination) {
             $("<ul class='onepage-pagination'>" + this.paginationList + "</ul>").prependTo("body");
             posTop = (this.$element.find(".onepage-pagination").height() / 2) * -1;
-            this.$element.find(".onepage-pagination").css("margin-top", posTop);
+            $(".onepage-pagination").css("margin-top", posTop);
             this.bindPagination();
           }
           this.reset();
