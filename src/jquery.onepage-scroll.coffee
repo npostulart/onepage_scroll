@@ -1,7 +1,7 @@
 #
 # Name    : jQuery Onepage Scroll
 # Author  : Niklas Postulart, @niklaspostulart
-# Version : 1.0.5
+# Version : 1.1.0
 # Repo    : https://github.com/npostulart/onepage-scroll
 # Website : http://niklaspostulart.de
 #
@@ -9,6 +9,8 @@
 "use strict"
 
 (($, Modernizr) ->
+
+	isInt = ( n ) -> n isnt "" and not isNaN(n) and Math.round(n) is n
 
 	# Partial class remove plugin
 	# partialMath = the class partial to match against, like "btn-" to match "btn-danger btn-active" but not "btn"
@@ -75,6 +77,12 @@
 			# get current active element
 			current = $("#{@settings.sectionContainer}.active")
 			current_index = current.data("index")
+
+			if not isInt page_index
+				target = @$element.find(page_index)
+				return if target.length isnt 1
+				page_index = target.data("index")
+				return if not isInt page_index
 
 			return if page_index is current_index
 			index = page_index
@@ -286,14 +294,14 @@
 				# Create pagination
 				if @settings.pagination
 					$("<ul class='onepage-pagination'>#{@paginationList}</ul>").prependTo "body"
-					posTop = (@$element.find(".onepage-pagination").height() / 2) * -1
+					posTop = ($(".onepage-pagination").height() / 2) * -1
 					$(".onepage-pagination").css "margin-top", posTop
 					# Bind pagination events
 					@bindPagination()
 				# Resets the view to first slide
 				@reset()
 				# Check for url hash
-				if window.location.hash isnt "" and window.location.hash isnt "#1"
+				if @settings.updateURL and window.location.hash isnt "" and window.location.hash isnt "#1"
 					init_index = window.location.hash.replace "#", ""
 					@moveTo init_index
 				# Bind swipe and scroll Events

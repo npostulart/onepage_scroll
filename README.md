@@ -1,4 +1,4 @@
-# jQuery One Page Scroll plugin
+# jQuery One Page Scroll plugin (v 1.1.0)
 
 This plugin is a full refactored fork of [Pete R. One Page Scroll plugin](https://github.com/peachananr/onepage-scroll) with keyboard support from [Brook Yang](https://github.com/yangg/onepage-scroll).
 
@@ -82,10 +82,12 @@ $(".main").data('onepage_scroll').moveDown();
 ```
 
 ### .moveTo(page_index)
-This method allows you to move to the specified page index programatically.
+This method allows you to move to the specified page index programatically.  
+You can use the index of the slide you want to move to or a specific selector of the slide. If you use the selector variant there must only be one element with the given selector, else the plugin won't move. The plugin looks for the data-attribute of the given slide to determine the index it has to scroll to.
 
 ```javascript
 $(".main").data('onepage_scroll').moveTo(3);
+$(".main").data('onepage_scroll').moveTo("#slide-1");
 ```
 
 ### .destroy()
