@@ -1,6 +1,10 @@
 (function() {
   "use strict";
   (function($, Modernizr) {
+    var isInt;
+    isInt = function(n) {
+      return n !== "" && !isNaN(n) && Math.round(n) === n;
+    };
     $.fn.stripClass = function(partialMatch, endOrBegin) {
       var x;
       x = new RegExp((!endOrBegin ? "\\b" : "\\S+") + partialMatch + "\\S*", "g");
@@ -58,10 +62,20 @@
         return this.moveTo(index - 1);
       };
       this.moveTo = function(page_index) {
-        var current, current_index, index, next,
+        var current, current_index, index, next, target,
           _this = this;
         current = $("" + this.settings.sectionContainer + ".active");
         current_index = current.data("index");
+        if (!isInt(page_index)) {
+          target = this.$element.find(page_index);
+          if (target.length !== 1) {
+            return;
+          }
+          page_index = target.data("index");
+          if (!isInt(page_index)) {
+            return;
+          }
+        }
         if (page_index === current_index) {
           return;
         }
@@ -275,12 +289,12 @@
           this.createSections();
           if (this.settings.pagination) {
             $("<ul class='onepage-pagination'>" + this.paginationList + "</ul>").prependTo("body");
-            posTop = (this.$element.find(".onepage-pagination").height() / 2) * -1;
+            posTop = ($(".onepage-pagination").height() / 2) * -1;
             $(".onepage-pagination").css("margin-top", posTop);
             this.bindPagination();
           }
           this.reset();
-          if (window.location.hash !== "" && window.location.hash !== "#1") {
+          if (this.settings.updateURL && window.location.hash !== "" && window.location.hash !== "#1") {
             init_index = window.location.hash.replace("#", "");
             this.moveTo(init_index);
           }
