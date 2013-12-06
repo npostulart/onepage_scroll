@@ -28,7 +28,7 @@ Your document should be structured in a way like this:
 The `.main` container must be one level below the `body` tag in order to make it work full page. You can now call the function to activate as follows:
 
 ```javascript
-$('.main').onepage_scroll({
+$(".main").onepage_scroll({
 	sectionContainer: "section", // sectionContainer accepts any kind of selector in case you don't want to use section
 	easing: "ease", // Easing options accepts the CSS3 easing animation such "ease", "linear", "ease-in", "ease-out", "ease-in-out", or even cubic bezier value such as "cubic-bezier(0.175, 0.885, 0.420, 1.310)"
 	animationTime: 1000, // AnimationTime let you define how long each section takes to animate
@@ -56,13 +56,13 @@ You can also trigger page move programmatically:
 To get the onepage_scroll object simply call:
 
 ```javascript
-onepage_scroll = $('.main').data('onepage_scroll')
+onepage_scroll = $(".main").data("onepage_scroll")
 ```
 
 or if just one element (it should be) just call:
 
 ```javascript
-onepage_scroll = $('.main').onepage_scroll()
+onepage_scroll = $(".main").onepage_scroll()
 ```
 
 You can then chain the needed methods.
@@ -71,14 +71,14 @@ You can then chain the needed methods.
 This method allows you to move the page up by one. This action is equivalent to scrolling up/swiping down.
 
 ```javascript
-$(".main").data('onepage_scroll').moveUp();
+$(".main").data("onepage_scroll").moveUp();
 ```
 
 ### .moveDown()
 This method allows you to move the page down by one. This action is equivalent to scrolling down/swiping up.
 
 ```javascript
-$(".main").data('onepage_scroll').moveDown();
+$(".main").data("onepage_scroll").moveDown();
 ```
 
 ### .moveTo(page_index)
@@ -86,22 +86,36 @@ This method allows you to move to the specified page index programatically.
 You can use the index of the slide you want to move to or a specific selector of the slide. If you use the selector variant there must only be one element with the given selector, else the plugin won't move. The plugin looks for the data-attribute of the given slide to determine the index it has to scroll to.
 
 ```javascript
-$(".main").data('onepage_scroll').moveTo(3);
-$(".main").data('onepage_scroll').moveTo("#slide-1");
+$(".main").data("onepage_scroll").moveTo(3);
+$(".main").data("onepage_scroll").moveTo("#slide-1");
 ```
 
 ### .destroy()
 This method completely removes all bindings, added classes, stylings and elements.
 
 ```javascript
-$(".main").data('onepage_scroll').destroy();
+$(".main").data("onepage_scroll").destroy();
 ```
 
 ### .create()
 This method allows you to manually recreate the plugin bindings, classes, stylings and elements after the destroy call.
 
 ```javascript
-$(".main").data('onepage_scroll').create();
+$(".main").data("onepage_scroll").create();
+```
+
+### .unbindEvents()
+This method allows you to manually unbind all events, useful if you use modals where you want to scroll the modal instead of the content.
+
+```javascript
+$(".main").data("onepage_scroll").unbindEvents();
+```
+
+### .bindEvents()
+This method allows you to manually rebind all events.
+
+```javascript
+$(".main").data("onepage_scroll").bindEvents();
 ```
 
 ## Callbacks

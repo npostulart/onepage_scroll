@@ -4,11 +4,14 @@ module.exports = (grunt) ->
         pkg: grunt.file.readJSON 'package.json'
         coffee:
             compile:
+                options:
+                    bare: false
                 files:
                     "dist/jquery.onepage-scroll.js": "src/jquery.onepage-scroll.coffee"
             compileWithMaps:
                 options:
                     sourceMap: true
+                    bare: false
                 files:
                     "dist/jquery.onepage-scroll.js": "src/jquery.onepage-scroll.coffee"
         uglify:

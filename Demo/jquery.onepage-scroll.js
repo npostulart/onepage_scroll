@@ -1,6 +1,17 @@
+/*
+Name    : jQuery Onepage Scroll
+Author  : Niklas Postulart, @niklaspostulart
+Version : 1.1.3
+Repo    : https://github.com/npostulart/onepage-scroll
+Website : http://niklaspostulart.de
+*/
+
+
 (function() {
   "use strict";
-  (function($, Modernizr) {
+  var wrap;
+
+  wrap = function($) {
     var isInt;
     isInt = function(n) {
       return n !== "" && !isNaN(n) && Math.round(n) === n;
@@ -17,20 +28,42 @@
       return this;
     };
     $.onepage_scroll = function(element, options) {
-      var supportTransition;
+      var supportTransform, supportTransition;
       this.settings = {};
       this.$element = $(element);
       this.state = "";
+      this.eventState = "";
       this.quietPeriod = 500;
       supportTransition = function() {
-        return Modernizr.csstransitions && Modernizr.csstransforms3d;
+        var thisBody, thisStyle;
+        thisBody = document.body || document.documentElement;
+        thisStyle = thisBody.style;
+        return thisStyle.transitions !== void 0 || thisStyle.WebkitTransition !== void 0;
+      };
+      supportTransform = function() {
+        var prefix, prefixes, prop, support, thisBody, thisStyle, _i, _len;
+        prefixes = "Webkit Moz O ms".split(" ");
+        prop = "transform";
+        thisBody = document.body || document.documentElement;
+        thisStyle = thisBody.style;
+        support = thisStyle[prop] !== void 0;
+        if (!support) {
+          prop = prop.charAt(0).toUpperCase() + prop.slice(1);
+          for (_i = 0, _len = prefixes.length; _i < _len; _i++) {
+            prefix = prefixes[_i];
+            if (thisStyle[prefix + prop] !== void 0) {
+              return true;
+            }
+          }
+        }
+        return support;
       };
       this.transformPage = function(index, callback) {
         var pos,
           _this = this;
         callback = typeof callback !== "function" ? $.noop : callback;
         pos = ((index - 1) * 100) * -1;
-        if (!supportTransition()) {
+        if (!this.supportTransition || !this.supportTransform) {
           this.$element.animate({
             top: "" + pos + "%"
           }, function() {
@@ -39,10 +72,12 @@
           });
         } else {
           this.$element.css({
-            "transform": "translate3d(0, " + pos + "%, 0)",
-            "transition": "all " + this.settings.animationTime + "ms " + this.settings.easing,
-            "-webkit-transform": "translate3d(0, " + pos + "%, 0)",
-            "-webkit-transition": "all " + this.settings.animationTime + "ms " + this.settings.easing
+            "-ms-transform": "translate(0, " + pos + "%)",
+            "-ms-transition": "all " + this.settings.animationTime + "ms " + this.settings.easing,
+            "-webkit-transform": "translate(0, " + pos + "%)",
+            "-webkit-transition": "all " + this.settings.animationTime + "ms " + this.settings.easing,
+            "transform": "translate(0, " + pos + "%)",
+            "transition": "all " + this.settings.animationTime + "ms " + this.settings.easing
           });
           this.$element.one("webkitTransitionEnd otransitionend oTransitionEnd msTransitionEnd transitionend", function() {
             _this.settings.afterMove(index);
@@ -103,12 +138,13 @@
           this.updateHistory(index);
         }
         if (this.settings.smooth && page_index !== index) {
-          return this.transformPage(index, function() {
+          this.transformPage(index, function() {
             return _this.moveTo(page_index);
           });
         } else {
-          return this.transformPage(index);
+          this.transformPage(index);
         }
+        return this;
       };
       this.updateHistory = function(index) {
         var href;
@@ -116,6 +152,30 @@
           href = window.location.href.substr(0, "" + (window.location.href.indexOf("#")) + "#" + index);
           history.pushState({}, document.title, href);
         }
+        return this;
+      };
+      this.bindEvents = function() {
+        if (this.eventState === "binded") {
+          return;
+        }
+        this.bindScrollEvents();
+        this.bindSwipeEvents();
+        if (this.settings.keyboard) {
+          this.bindKeyEvents();
+        }
+        this.eventState = "binded";
+        return this;
+      };
+      this.unbindEvents = function() {
+        if (this.eventState !== "binded") {
+          return;
+        }
+        this.unbindScrollEvents();
+        this.unbindSwipeEvents();
+        if (this.settings.keyboard) {
+          this.unbindKeyEvents();
+        }
+        this.eventState = "unbinded";
         return this;
       };
       this.bindScrollEvents = function() {
@@ -238,7 +298,7 @@
         var topPos,
           _this = this;
         topPos = 0;
-        return $.each(this.sections, function(i, elem) {
+        $.each(this.sections, function(i, elem) {
           $(elem).addClass("section").attr("data-index", i + 1).css({
             position: "absolute",
             top: "" + topPos + "%"
@@ -248,9 +308,11 @@
             return _this.paginationList += "<li><a data-index='" + (i + 1) + "' href='#" + (i + 1) + "'></a></li>";
           }
         });
+        return this;
       };
       this.destroySections = function() {
-        return this.sections.removeClass("section active").removeAttr("data-index style");
+        this.sections.removeClass("section active").removeAttr("data-index style");
+        return this;
       };
       this.destroy = function() {
         if (this.state === "created") {
@@ -263,11 +325,7 @@
             $("ul.onepage-pagination").off("click.onepage", "li a");
             $("ul.onepage-pagination").remove();
           }
-          if (this.settings.keyboard) {
-            this.unbindKeyEvents();
-          }
-          this.unbindSwipeEvents();
-          this.unbindScrollEvents();
+          this.unbindEvents();
           this.state = "destroyed";
           this.settings.afterDestroy();
         }
@@ -298,11 +356,7 @@
             init_index = window.location.hash.replace("#", "");
             this.moveTo(init_index);
           }
-          this.bindSwipeEvents();
-          this.bindScrollEvents();
-          if (this.settings.keyboard) {
-            this.bindKeyEvents();
-          }
+          this.bindEvents();
           this.state = "created";
           this.settings.afterCreate();
         }
@@ -319,6 +373,8 @@
       this.init = function() {
         var _this = this;
         this.settings = $.extend({}, this.defaults, options);
+        this.supportTransition = supportTransition();
+        this.supportTransform = supportTransform();
         if (this.settings.responsiveFallbackWidth !== false || this.settings.responsiveFallbackHeight !== false) {
           $(window).on("resize.onepage", function() {
             return _this.watchResponsive();
@@ -361,6 +417,12 @@
       }
     };
     return $.fn.onepage_scroll;
-  })(jQuery, Modernizr);
+  };
+
+  if (typeof define === "function" && define.amd) {
+    define(["jquery"], wrap);
+  } else {
+    wrap(jQuery);
+  }
 
 }).call(this);

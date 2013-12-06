@@ -1,15 +1,18 @@
-#
-# Name    : jQuery Onepage Scroll
-# Author  : Niklas Postulart, @niklaspostulart
-# Version : 1.1.0
-# Repo    : https://github.com/npostulart/onepage-scroll
-# Website : http://niklaspostulart.de
-#
+###
+Name    : jQuery Onepage Scroll
+Author  : Niklas Postulart, @niklaspostulart
+Version : 1.1.3
+Repo    : https://github.com/npostulart/onepage-scroll
+Website : http://niklaspostulart.de
+###
+
 
 "use strict"
 
-(($, Modernizr) ->
+# Wrapper function that allows us to pass it to define later
+wrap = ( $ ) ->
 
+	# Check if value is int
 	isInt = ( n ) -> n isnt "" and not isNaN(n) and Math.round(n) is n
 
 	# Partial class remove plugin
@@ -31,12 +34,32 @@
 
 		# Current Plugin state
 		@state = ""
+		@eventState = ""
 
 		# Waittime for next scroll/swipe-Event
 		@quietPeriod = 500
 
 		# Returns true if browser supports transitions
-		supportTransition = -> Modernizr.csstransitions and Modernizr.csstransforms3d
+		supportTransition = () ->
+			thisBody = document.body or document.documentElement
+			thisStyle = thisBody.style
+			thisStyle.transitions isnt undefined or thisStyle.WebkitTransition isnt undefined
+
+		# Returns ture if browser supports transform (2D)
+		supportTransform = () ->
+			prefixes = "Webkit Moz O ms".split " "
+			prop = "transform"
+			thisBody = document.body or document.documentElement
+			thisStyle = thisBody.style
+
+			support = thisStyle[prop] isnt undefined
+
+			if not support
+				prop = prop.charAt(0).toUpperCase() + prop.slice(1)
+				for prefix in prefixes
+					return true if thisStyle[prefix+prop] isnt undefined
+
+			support
 
 		# Scroll Animation
 		# afterMove function is called after animation
@@ -44,7 +67,7 @@
 			callback = if typeof callback isnt "function" then $.noop else callback
 			pos = ( ( index - 1 ) * 100 ) * -1
 			# If Browser doesn't support transitions use jQuery animate
-			if not supportTransition()
+			if not @supportTransition or not @supportTransform
 				@$element.animate
 					top: "#{pos}%"
 				, () =>
@@ -53,10 +76,12 @@
 			# Use transform and transition for animation
 			else
 				@$element.css
-					"transform": "translate3d(0, #{pos}%, 0)"
-					"transition": "all #{@settings.animationTime}ms #{@settings.easing}"
-					"-webkit-transform": "translate3d(0, #{pos}%, 0)"
+					"-ms-transform": "translate(0, #{pos}%)"
+					"-ms-transition": "all #{@settings.animationTime}ms #{@settings.easing}"
+					"-webkit-transform": "translate(0, #{pos}%)"
 					"-webkit-transition": "all #{@settings.animationTime}ms #{@settings.easing}"
+					"transform": "translate(0, #{pos}%)"
+					"transition": "all #{@settings.animationTime}ms #{@settings.easing}"
 				@$element.one "webkitTransitionEnd otransitionend oTransitionEnd msTransitionEnd transitionend", () =>
 					@settings.afterMove index
 					callback index
@@ -117,10 +142,11 @@
 
 			# Call the animation function
 			if @settings.smooth and page_index isnt index
-				@transformPage index, () =>
+				@transformPage index, =>
 					@moveTo page_index
 			else
 				@transformPage index
+			@
 
 		# Update the history according to the given index
 		@updateHistory = ( index ) ->
@@ -130,30 +156,50 @@
 				history.pushState {}, document.title, href
 			@
 
+		# Bind all events
+		@bindEvents = ->
+			# Only bind if events not already binded
+			return if @eventState is "binded"
+			@bindScrollEvents()
+			@bindSwipeEvents()
+			@bindKeyEvents() if @settings.keyboard
+			@eventState = "binded"
+			@
+
+		# Unbind all events
+		@unbindEvents = ->
+			# Only unbind if events already binded
+			return if @eventState isnt "binded"
+			@unbindScrollEvents()
+			@unbindSwipeEvents()
+			@unbindKeyEvents() if @settings.keyboard
+			@eventState = "unbinded"
+			@
+
 		# Bind scroll Events
-		@bindScrollEvents = () ->
-			$(document).bind "mousewheel.onepage DOMMouseScroll.onepage", (e) =>
+		@bindScrollEvents = ->
+			$(document).bind "mousewheel.onepage DOMMouseScroll.onepage", ( e ) =>
 				e.preventDefault()
 				delta = e.originalEvent.wheelDelta || -e.originalEvent.detail
 				@init_scroll e, delta
 			@
 
 		# Unbind scroll Events
-		@unbindScrollEvents = () ->
+		@unbindScrollEvents = ->
 			$(document).unbind "mousewheel.onepage DOMMouseScroll.onepage"
 			@
 
 		# Bind swipeDown and swipeUp Events
-		@bindSwipeEvents = () ->
+		@bindSwipeEvents = ->
 			hammer = @$element.hammer()
 			# Bind swipedown gesture
-			@$element.hammer().on "swipedown.onepage", (e) =>
+			@$element.hammer().on "swipedown.onepage", ( e ) =>
 				e.preventDefault()
 				# prevent default gesture event
 				e.gesture.preventDefault()
 				@moveUp()
 			# Bind swipeup gesture
-			.on "swipeup.onepage", (e) =>
+			.on "swipeup.onepage", ( e ) =>
 				e.preventDefault()
 				# prevent default gesture event
 				e.gesture.preventDefault()
@@ -161,14 +207,14 @@
 			@
 
 		# Unbind swipeDown and swipeUp Events
-		@unbindSwipeEvents = () ->
+		@unbindSwipeEvents = ->
 			hammer = @$element.hammer()
 			hammer.off "swipedown.onepage"
 			hammer.off "swipeup.onepage"
 			@
 
 		# Bind key Events
-		@bindKeyEvents = () ->
+		@bindKeyEvents = ->
 			$(document).on "keydown.onepage", ( e ) =>
 				tag = e.target.nodeName
 				return if tag is "INPUT" or tag is "TEXTAREA"
@@ -182,18 +228,18 @@
 			@
 
 		# Unbind key Events
-		@unbindKeyEvents = () ->
+		@unbindKeyEvents = ->
 			$(document).off "keydown.onepage"
 			@
 
 		# Return if viewport is too small
-		@viewportTooSmall = () ->
+		@viewportTooSmall = ->
 			return true if @settings.responsiveFallbackWidth isnt false and $(window).width() < @settings.responsiveFallbackWidth
 			return true if @settings.responsiveFallbackHeight isnt false and $(window).height() < @settings.responsiveFallbackHeight
 			return false
 
 		# Responsive behaviour
-		@watchResponsive = () ->
+		@watchResponsive = ->
 			# if window smaller than fallback size in settings
 			if @viewportTooSmall()
 				# Destroy Plugin
@@ -218,7 +264,7 @@
 			@
 
 		# Bind pagination events
-		@bindPagination = () ->
+		@bindPagination = ->
 			$(".onepage-pagination").on "click.onepage", "li a", (e) =>
 				# get index value from link
 				page_index = $(e.currentTarget).data "index"
@@ -226,7 +272,7 @@
 			@
 
 		# Set class and css for the sections and create pagination elements
-		@createSections = () ->
+		@createSections = ->
 			# Set css for each section
 			topPos = 0
 			$.each @sections, ( i, elem ) =>
@@ -236,14 +282,16 @@
 				topPos += 100
 				# Add element to paginationlist
 				@paginationList += "<li><a data-index='#{i+1}' href='##{i+1}'></a></li>" if @settings.pagination
+			@
 
 		# Remove class and css for the sections
-		@destroySections = () ->
+		@destroySections = ->
 			# Remove css and class for each section
 			@sections.removeClass("section active").removeAttr("data-index style")
+			@
 
 		# Destroy all plugin bindings and modifications on DOM
-		@destroy = () ->
+		@destroy = ->
 			# Check if Plugin is created
 			if @state is "created"
 				# Call before destroy callback
@@ -259,11 +307,8 @@
 					# unbind events before remove
 					$("ul.onepage-pagination").off "click.onepage", "li a"
 					$("ul.onepage-pagination").remove()
-				# Remove keyboard bindings
-				@unbindKeyEvents() if @settings.keyboard
-				# Remove swipe and scroll bindings
-				@unbindSwipeEvents()
-				@unbindScrollEvents()
+				# Remove event bindings
+				@unbindEvents()
 				# Set state
 				@state = "destroyed"
 				# Call after destroy callback
@@ -271,7 +316,7 @@
 			@
 
 		# Create all plugin bindings and modifications on DOM
-		@create = () ->
+		@create = ->
 			if @state isnt "created"
 				# Do nothing if viewport is too small
 				return if @viewportTooSmall()
@@ -304,27 +349,29 @@
 				if @settings.updateURL and window.location.hash isnt "" and window.location.hash isnt "#1"
 					init_index = window.location.hash.replace "#", ""
 					@moveTo init_index
-				# Bind swipe and scroll Events
-				@bindSwipeEvents()
-				@bindScrollEvents()
-				# Bind keyboard events
-				@bindKeyEvents() if @settings.keyboard
+				# Add event bindings
+				@bindEvents()
 				# Set state
 				@state = "created"
 				# Call after create callback
 				@settings.afterCreate()
 			@
 
-		@reset = () ->
+		# Reset to first slide view
+		@reset = ->
 			# Set first slide active
 			$("#{@settings.sectionContainer}[data-index='1']").addClass "active"
 			$("body").addClass "viewing-page-1"
 			$(".onepage-pagination li a[data-index='1']").addClass "active" if @settings.pagination
 			$(window).scrollTop 0
 
+		# Initialize plugin method
 		@init = ->
 			# Concatenate settings and options
 			@settings = $.extend( {}, @defaults, options )
+
+			@supportTransition = supportTransition()
+			@supportTransform = supportTransform()
 
 			# Enable responsive Fallback if set
 			if @settings.responsiveFallbackWidth isnt false or @settings.responsiveFallbackHeight isnt false
@@ -373,4 +420,10 @@
 			$(@).data "onepage_scroll"
 
 	$.fn.onepage_scroll
-)( jQuery, Modernizr )
+
+# Check for the presence of an AMD loader and if so pass the wrap function to define
+# We can safely assume 'jquery' is the module name as it is a named module already - http://goo.gl/PWyOV
+if typeof define is "function" and define.amd
+	define ["jquery"], wrap
+else
+	wrap jQuery
