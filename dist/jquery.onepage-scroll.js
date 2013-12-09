@@ -1,7 +1,7 @@
 /*
 Name    : jQuery Onepage Scroll
 Author  : Niklas Postulart, @niklaspostulart
-Version : 1.1.3
+Version : 1.1.5
 Repo    : https://github.com/npostulart/onepage-scroll
 Website : http://niklaspostulart.de
 */
@@ -167,7 +167,7 @@ Website : http://niklaspostulart.de
         return this;
       };
       this.unbindEvents = function() {
-        if (this.eventState !== "binded" || this.state !== "created") {
+        if (this.eventState !== "binded") {
           return;
         }
         this.unbindScrollEvents();
@@ -356,8 +356,8 @@ Website : http://niklaspostulart.de
             init_index = window.location.hash.replace("#", "");
             this.moveTo(init_index);
           }
-          this.bindEvents();
           this.state = "created";
+          this.bindEvents();
           this.settings.afterCreate();
         }
         return this;
