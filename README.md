@@ -2,15 +2,15 @@
 
 This plugin is a full refactored fork of [Pete R. One Page Scroll plugin](https://github.com/peachananr/onepage-scroll) with keyboard support from [Brook Yang](https://github.com/yangg/onepage-scroll).
 
-It's completely rewritten in coffee and uses [Modernizr](http://modernizr.com/) for feature detection and [hammer.js](http://eightmedia.github.io/hammer.js/) for touch support in all Browsers (even IE Touch Events)
+It's completely rewritten in coffee and uses [hammer.js](http://eightmedia.github.io/hammer.js/) for touch support in all Browsers (even IE Touch Events)
 
 ## Compatibility
-Tested in Chrome (31.0.1650.57), Firefox (25.0.1), Safari (7.0), IE (8, 9, 10 with Touch Support)
+Tested in Chrome (31.0.1650.57), Firefox (25.0.1), Safari (7.0), IE (9, 10 with Touch Support)
 
 ## Basic Usage
-To use the plugin you have to add Modernizr configured with detection for `csstransitions` and `csstransforms3d`, and the hammer.js jQuery library.
+To use the plugin you have to the hammer.js jQuery library.
 
-Add `onepage-scroll.css` and Modernizr to your head and `jquery` (1.10.2 or later), hammer.js and `jquery.onepage-scroll.js` at the end of your body. You can use require.js to load the dependencies as needed.
+Add `onepage-scroll.css` to your head and `jquery` (1.10.2 or later), hammer.js and `jquery.onepage-scroll.js` at the end of your body. You can use require.js to load the dependencies as needed.
 
 Your document should be structured in a way like this:
 
@@ -22,6 +22,7 @@ Your document should be structured in a way like this:
 		<section>...</section>
 		...
 	</div>
+	...
 </body>
 ```
 

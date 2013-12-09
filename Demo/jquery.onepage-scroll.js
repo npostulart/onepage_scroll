@@ -155,7 +155,7 @@ Website : http://niklaspostulart.de
         return this;
       };
       this.bindEvents = function() {
-        if (this.eventState === "binded") {
+        if (this.eventState === "binded" || this.state !== "created") {
           return;
         }
         this.bindScrollEvents();
@@ -167,7 +167,7 @@ Website : http://niklaspostulart.de
         return this;
       };
       this.unbindEvents = function() {
-        if (this.eventState !== "binded") {
+        if (this.eventState !== "binded" || this.state !== "created") {
           return;
         }
         this.unbindScrollEvents();

@@ -1,7 +1,7 @@
 ###
 Name    : jQuery Onepage Scroll
 Author  : Niklas Postulart, @niklaspostulart
-Version : 1.1.3
+Version : 1.1.4
 Repo    : https://github.com/npostulart/onepage-scroll
 Website : http://niklaspostulart.de
 ###
@@ -159,7 +159,7 @@ wrap = ( $ ) ->
 		# Bind all events
 		@bindEvents = ->
 			# Only bind if events not already binded
-			return if @eventState is "binded"
+			return if @eventState is "binded" or @state isnt "created"
 			@bindScrollEvents()
 			@bindSwipeEvents()
 			@bindKeyEvents() if @settings.keyboard
@@ -169,7 +169,7 @@ wrap = ( $ ) ->
 		# Unbind all events
 		@unbindEvents = ->
 			# Only unbind if events already binded
-			return if @eventState isnt "binded"
+			return if @eventState isnt "binded" or @state isnt "created"
 			@unbindScrollEvents()
 			@unbindSwipeEvents()
 			@unbindKeyEvents() if @settings.keyboard
