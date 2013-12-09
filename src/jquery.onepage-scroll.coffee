@@ -1,7 +1,7 @@
 ###
 Name    : jQuery Onepage Scroll
 Author  : Niklas Postulart, @niklaspostulart
-Version : 1.1.4
+Version : 1.1.5
 Repo    : https://github.com/npostulart/onepage-scroll
 Website : http://niklaspostulart.de
 ###
@@ -169,7 +169,7 @@ wrap = ( $ ) ->
 		# Unbind all events
 		@unbindEvents = ->
 			# Only unbind if events already binded
-			return if @eventState isnt "binded" or @state isnt "created"
+			return if @eventState isnt "binded"
 			@unbindScrollEvents()
 			@unbindSwipeEvents()
 			@unbindKeyEvents() if @settings.keyboard
@@ -349,10 +349,10 @@ wrap = ( $ ) ->
 				if @settings.updateURL and window.location.hash isnt "" and window.location.hash isnt "#1"
 					init_index = window.location.hash.replace "#", ""
 					@moveTo init_index
-				# Add event bindings
-				@bindEvents()
 				# Set state
 				@state = "created"
+				# Add event bindings
+				@bindEvents()
 				# Call after create callback
 				@settings.afterCreate()
 			@
