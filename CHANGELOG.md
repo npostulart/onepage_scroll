@@ -1,4 +1,11 @@
 # Changelog
+
+## v1.1.5
+* Fixed Event binding bug
+
+## v1.1.4
+* Fixed Event binding to work only if Plugin is created
+
 ## v1.1.3
 * AMD module
 * removed need of Modernizr
