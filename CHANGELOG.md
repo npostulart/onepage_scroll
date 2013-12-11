@@ -1,5 +1,8 @@
 # Changelog
 
+## v1.1.6
+* Fixed iPad touchmove "wobbling"
+
 ## v1.1.5
 * Fixed Event binding bug
 
