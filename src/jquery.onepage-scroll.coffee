@@ -204,6 +204,10 @@ wrap = ( $ ) ->
 				# prevent default gesture event
 				e.gesture.preventDefault()
 				@moveDown()
+
+			$(document).bind 'touchmove.onepage', (e) ->
+				e.preventDefault()
+				false
 			@
 
 		# Unbind swipeDown and swipeUp Events
@@ -211,6 +215,7 @@ wrap = ( $ ) ->
 			hammer = @$element.hammer()
 			hammer.off "swipedown.onepage"
 			hammer.off "swipeup.onepage"
+			$(document).unbind 'touchmove.onepage'
 			@
 
 		# Bind key Events
