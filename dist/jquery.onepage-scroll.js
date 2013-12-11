@@ -205,6 +205,10 @@ Website : http://niklaspostulart.de
           e.gesture.preventDefault();
           return _this.moveDown();
         });
+        $(document).bind('touchmove.onepage', function(e) {
+          e.preventDefault();
+          return false;
+        });
         return this;
       };
       this.unbindSwipeEvents = function() {
@@ -212,6 +216,7 @@ Website : http://niklaspostulart.de
         hammer = this.$element.hammer();
         hammer.off("swipedown.onepage");
         hammer.off("swipeup.onepage");
+        $(document).unbind('touchmove.onepage');
         return this;
       };
       this.bindKeyEvents = function() {
