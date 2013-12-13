@@ -1,5 +1,8 @@
 # Changelog
 
+## v1.1.7
+* Return Plugin self as parameter on beforeCreate, beforeDestroy, afterCreate and afterDestroy
+
 ## v1.1.6
 * Fixed iPad touchmove "wobbling"
 
