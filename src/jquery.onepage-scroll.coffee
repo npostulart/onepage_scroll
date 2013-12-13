@@ -1,7 +1,7 @@
 ###
 Name    : jQuery Onepage Scroll
 Author  : Niklas Postulart, @niklaspostulart
-Version : 1.1.5
+Version : 1.1.7
 Repo    : https://github.com/npostulart/onepage-scroll
 Website : http://niklaspostulart.de
 ###
@@ -300,7 +300,7 @@ wrap = ( $ ) ->
 			# Check if Plugin is created
 			if @state is "created"
 				# Call before destroy callback
-				@settings.beforeDestroy()
+				@settings.beforeDestroy @
 				# Remove classes and style attributes
 				$("html, body").removeClass "onepage-scroll-enabled"
 				$("body").stripClass "viewing-page-"
@@ -317,7 +317,7 @@ wrap = ( $ ) ->
 				# Set state
 				@state = "destroyed"
 				# Call after destroy callback
-				@settings.afterDestroy()
+				@settings.afterDestroy @
 			@
 
 		# Create all plugin bindings and modifications on DOM
@@ -326,7 +326,7 @@ wrap = ( $ ) ->
 				# Do nothing if viewport is too small
 				return if @viewportTooSmall()
 				# Call before create callback
-				@settings.beforeCreate()
+				@settings.beforeCreate @
 				# All sections
 				@sections = $ @settings.sectionContainer
 				# Section count
@@ -359,7 +359,7 @@ wrap = ( $ ) ->
 				# Add event bindings
 				@bindEvents()
 				# Call after create callback
-				@settings.afterCreate()
+				@settings.afterCreate @
 			@
 
 		# Reset to first slide view

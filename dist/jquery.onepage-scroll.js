@@ -1,7 +1,7 @@
 /*
 Name    : jQuery Onepage Scroll
 Author  : Niklas Postulart, @niklaspostulart
-Version : 1.1.5
+Version : 1.1.7
 Repo    : https://github.com/npostulart/onepage-scroll
 Website : http://niklaspostulart.de
 */
@@ -321,7 +321,7 @@ Website : http://niklaspostulart.de
       };
       this.destroy = function() {
         if (this.state === "created") {
-          this.settings.beforeDestroy();
+          this.settings.beforeDestroy(this);
           $("html, body").removeClass("onepage-scroll-enabled");
           $("body").stripClass("viewing-page-");
           this.$element.removeClass("onepage-wrapper").removeAttr("style");
@@ -332,7 +332,7 @@ Website : http://niklaspostulart.de
           }
           this.unbindEvents();
           this.state = "destroyed";
-          this.settings.afterDestroy();
+          this.settings.afterDestroy(this);
         }
         return this;
       };
@@ -342,7 +342,7 @@ Website : http://niklaspostulart.de
           if (this.viewportTooSmall()) {
             return;
           }
-          this.settings.beforeCreate();
+          this.settings.beforeCreate(this);
           this.sections = $(this.settings.sectionContainer);
           this.total = this.sections.length;
           this.lastAnimation = 0;
@@ -363,7 +363,7 @@ Website : http://niklaspostulart.de
           }
           this.state = "created";
           this.bindEvents();
-          this.settings.afterCreate();
+          this.settings.afterCreate(this);
         }
         return this;
       };
