@@ -1,7 +1,7 @@
 /*
 Name    : jQuery Onepage Scroll
 Author  : Niklas Postulart, @niklaspostulart
-Version : 1.1.5
+Version : 1.1.7
 Repo    : https://github.com/npostulart/onepage-scroll
 Website : http://niklaspostulart.de
 */
