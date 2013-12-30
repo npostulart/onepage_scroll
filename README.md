@@ -1,4 +1,4 @@
-# jQuery One Page Scroll plugin (v 1.1.0)
+# jQuery One Page Scroll plugin
 
 This plugin is a full refactored fork of [Pete R. One Page Scroll plugin](https://github.com/peachananr/onepage-scroll) with keyboard support from [Brook Yang](https://github.com/yangg/onepage-scroll).
 

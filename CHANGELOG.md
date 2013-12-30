@@ -1,5 +1,8 @@
 # Changelog
 
+## v1.1.8
+* Do not invoke afterMove when transitionEnd's bubbled from a child element
+
 ## v1.1.7
 * Return Plugin self as parameter on beforeCreate, beforeDestroy, afterCreate and afterDestroy
 

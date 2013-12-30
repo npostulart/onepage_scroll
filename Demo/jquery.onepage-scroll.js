@@ -1,7 +1,7 @@
 /*
 Name    : jQuery Onepage Scroll
 Author  : Niklas Postulart, @niklaspostulart
-Version : 1.1.7
+Version : 1.1.8
 Repo    : https://github.com/npostulart/onepage-scroll
 Website : http://niklaspostulart.de
 */
@@ -59,7 +59,7 @@ Website : http://niklaspostulart.de
         return support;
       };
       this.transformPage = function(index, callback) {
-        var pos,
+        var pos, self,
           _this = this;
         callback = typeof callback !== "function" ? $.noop : callback;
         pos = ((index - 1) * 100) * -1;
@@ -79,9 +79,12 @@ Website : http://niklaspostulart.de
             "transform": "translate(0, " + pos + "%)",
             "transition": "all " + this.settings.animationTime + "ms " + this.settings.easing
           });
-          this.$element.one("webkitTransitionEnd otransitionend oTransitionEnd msTransitionEnd transitionend", function() {
-            _this.settings.afterMove(index);
-            return callback(index);
+          self = this;
+          this.$element.one("webkitTransitionEnd otransitionend oTransitionEnd msTransitionEnd transitionend", function(e) {
+            if (e.target === this) {
+              self.settings.afterMove(index);
+              return callback(index);
+            }
           });
         }
         return this;
