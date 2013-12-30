@@ -1,7 +1,7 @@
 ###
 Name    : jQuery Onepage Scroll
 Author  : Niklas Postulart, @niklaspostulart
-Version : 1.1.7
+Version : 1.1.8
 Repo    : https://github.com/npostulart/onepage-scroll
 Website : http://niklaspostulart.de
 ###
@@ -82,9 +82,11 @@ wrap = ( $ ) ->
 					"-webkit-transition": "all #{@settings.animationTime}ms #{@settings.easing}"
 					"transform": "translate(0, #{pos}%)"
 					"transition": "all #{@settings.animationTime}ms #{@settings.easing}"
-				@$element.one "webkitTransitionEnd otransitionend oTransitionEnd msTransitionEnd transitionend", () =>
-					@settings.afterMove index
-					callback index
+				self = @
+				@$element.one "webkitTransitionEnd otransitionend oTransitionEnd msTransitionEnd transitionend", (e) ->
+					if e.target is @
+						self.settings.afterMove index
+						callback index
 			@
 
 		# Move the page one slide down
