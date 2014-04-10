@@ -1,5 +1,8 @@
 # Changelog
 
+## v1.1.9
+* Add class-setting to exclude single sections from pagination
+
 ## v1.1.8
 * Do not invoke afterMove when transitionEnd's bubbled from a child element
 
